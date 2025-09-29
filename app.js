@@ -28,9 +28,9 @@ app.get('/', (req, res) => {
 });
 
 // Rutas del API
-app.use('/api/auth', authRoutes);
-app.use('/api', userRoutes);
-app.use('/api', couponRoutes);
+app.use('/beneficioJoven/auth', authRoutes);
+app.use('/beneficioJoven', userRoutes);
+app.use('/beneficioJoven', couponRoutes);
 
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';  // Escucha en todas las interfaces para acceso en red

@@ -46,17 +46,17 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
 ### **Endpoints principales**
 | Método | Endpoint                  | Descripción                              | Requiere autenticación? |
 |--------|---------------------------|------------------------------------------|------------------------|
-| POST   | `/api/auth/register`      | Registra un nuevo usuario (cualquier rol) | No                    |
-| POST   | `/api/auth/login`         | Inicia sesión y devuelve un token JWT    | No                     |
-| POST   | `/api/users`              | Crea un nuevo usuario (solo admins)      | Sí (admin)             |
-| GET    | `/api/users`              | Lista todos los usuarios (solo admins)   | Sí (admin)             |
-| GET    | `/api/allusers`           | Lista todos los usuarios (publico - pruebas)   | No               |
-| GET    | `/api/jovenes`            | Lista los jovenes (publico - pruebas)    | No                     |
-| GET    | `/api/merchants`          | Lista los comercios (publico - pruebas)  | No                     |
-| GET    | `/api/admins`             | Lista los admins (publico - pruebas)     | No                     |
-| POST   | `/api/coupons`            | Crea un nuevo cupón (solo admins)        | Sí (admin)             |
-| GET    | `/api/coupons`            | Lista cupones válidos (público)          | No                     |
-| POST   | `/api/coupons/redeem`     | Canjea un cupón (solo merchant)          | Sí (merchant)          |
+| POST   | `/beneficioJoven/auth/register`      | Registra un nuevo usuario (cualquier rol) | No                    |
+| POST   | `/beneficioJoven/auth/login`         | Inicia sesión y devuelve un token JWT    | No                     |
+| POST   | `/beneficioJoven/users`              | Crea un nuevo usuario (solo admins)      | Sí (admin)             |
+| GET    | `/beneficioJoven/users`              | Lista todos los usuarios (solo admins)   | Sí (admin)             |
+| GET    | `/beneficioJoven/allusers`           | Lista todos los usuarios (publico - pruebas)   | No               |
+| GET    | `/beneficioJoven/jovenes`            | Lista los jovenes (publico - pruebas)    | No                     |
+| GET    | `/beneficioJoven/merchants`          | Lista los comercios (publico - pruebas)  | No                     |
+| GET    | `/beneficioJoven/admins`             | Lista los admins (publico - pruebas)     | No                     |
+| POST   | `/beneficioJoven/coupons`            | Crea un nuevo cupón (solo admins)        | Sí (admin)             |
+| GET    | `/beneficioJoven/coupons`            | Lista cupones válidos (público)          | No                     |
+| POST   | `/beneficioJoven/coupons/redeem`     | Canjea un cupón (solo merchant)          | Sí (merchant)          |
 
 ### **Cómo probar el backend localmente**
 1. **Requisitos**:
@@ -74,11 +74,11 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
    - Usa **Postman** o **curl** para probar los endpoints.
    - Ejemplo para listar cupones:
      ```bash
-     curl http://localhost:3000/api/coupons
+     curl http://localhost:3000/beneficioJoven/coupons
      ```
    - Ejemplo para crear un cupón (requiere token de merchant):
      ```bash
-     curl -X POST http://localhost:3000/api/coupons \
+     curl -X POST http://localhost:3000/beneficioJoven/coupons \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer <tu_token>" \
      -d '{"code":"PROMO20","title":"20% off","description":"Válido en tiendas","discount_type":"Porcentaje","valid_until":"2025-12-31","usage_limit":50,"qr_code_url":"http://example.com/qr2.png"}'
