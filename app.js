@@ -6,12 +6,28 @@ const db = require('./config/db');  // Importar DB para verificar conexión
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const couponRoutes = require('./routes/couponRoutes');
+const path = require('path');  // Para manejar rutas de archivos
+const cors = require('cors');  // Para habilitar CORS
 
 dotenv.config();
 
 const app = express();
+
+// Habilitar CORS para permitir solicitudes desde el frontend
+app.use(cors());
+
+// Middleware para parsear JSON
 app.use(bodyParser.json());
 
+// Servir archivos estáticos desde la carpeta 'public'
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Ruta raíz para servir index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Rutas del API
 app.use('/api/auth', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', couponRoutes);

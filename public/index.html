@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beneficio Joven API</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    pre {
+      background: #f4f4f4;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      white-space: pre-wrap; /* Permite que el texto se ajuste y respete saltos de línea */
+      word-break: break-all; /* Evita que palabras largas rompan el diseño */
+      font-size: 0.9rem; /* Tamaño de fuente más legible */
+      line-height: 1.5; /* Mejor espaciado entre líneas */
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <header class="bg-blue-600 text-white py-6">
+    <div class="container mx-auto px-4">
+      <h1 class="text-3xl font-bold">Beneficio Joven API</h1>
+      <p class="mt-2">API REST para el sistema de cupones de Beneficio Joven</p>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+
+    <!-- Documentación de Endpoints -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Endpoints Disponibles</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="text-lg font-semibold">POST /api/auth/register</h3>
+          <p class="text-gray-600">Registra un nuevo usuario (cliente, comercio, admin).</p>
+          <pre>
+curl -X POST http://localhost:3000/api/auth/register
+  -H "Content-Type: application/json"
+  -d '{"email":"juan@example.com","password":"123456","role":"user","profileData":{"full_name":"Juan Pérez","curp":"PEMJ123456HDFRRN01","birth_date":"2000-01-01","municipality":"CDMX"}}'
+          </pre>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="text-lg font-semibold">POST /api/auth/login</h3>
+          <p class="text-gray-600">Inicia sesión y obtiene un token JWT.</p>
+          <pre>
+curl -X POST http://localhost:3000/api/auth/login
+  -H "Content-Type: application/json"
+  -d '{"email":"juan@example.com","password":"123456"}'
+          </pre>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="text-lg font-semibold">GET /api/coupons</h3>
+          <p class="text-gray-600">Lista todos los cupones válidos (público).</p>
+          <pre>
+curl http://localhost:3000/api/coupons
+          </pre>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="text-lg font-semibold">POST /api/coupons</h3>
+          <p class="text-gray-600">Crea un nuevo cupón (requiere token de merchant).</p>
+          <pre>
+curl -X POST http://localhost:3000/api/coupons
+  -H "Content-Type: application/json"
+  -H "Authorization: Bearer <token>"
+  -d '{"code":"PROMO20","title":"20% off","description":"Válido en tiendas","discount_type":"Porcentaje","valid_until":"2025-12-31","usage_limit":50,"qr_code_url":"http://example.com/qr2.png"}'
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Probar el API -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Prueba el API</h2>
+      
+      <!-- Listar Cupones -->
+      <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h3 class="text-lg font-semibold mb-2">Listar Cupones (GET /api/coupons)</h3>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/api/coupons">Obtener Cupones</a></button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,8 +1,8 @@
 const db = require('../config/db');
 
-// Crear cupón (para merchants)
+// Crear cupón (para admins)
 exports.createCoupon = async (req, res) => {
-  if (req.user.role !== 'merchant') return res.status(403).json({ error: 'No autorizado' });
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'No autorizado' });
   const { code, title, description, discount_type, valid_until, usage_limit, qr_code_url } = req.body;
   const merchant_id = req.user.id;
 
@@ -27,9 +27,9 @@ exports.listCoupons = async (req, res) => {
   }
 };
 
-// Canjear cupón (para users)
+// Canjear cupón (para merchant)
 exports.redeemCoupon = async (req, res) => {
-  if (req.user.role !== 'user') return res.status(403).json({ error: 'No autorizado' });
+  if (req.user.role !== 'merchant') return res.status(403).json({ error: 'No autorizado' });
   const { coupon_id } = req.body;
   const user_id = req.user.id;
 
