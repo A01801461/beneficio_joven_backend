@@ -16,6 +16,7 @@
       font-size: 0.9rem; /* Tamaño de fuente más legible */
       line-height: 1.5; /* Mejor espaciado entre líneas */
     }
+    h3{margin-top: 50px;}
   </style>
 </head>
 <body class="bg-gray-100">
@@ -76,8 +77,16 @@ curl -X POST http://localhost:3000/api/coupons
       
       <!-- Listar Cupones -->
       <div class="bg-white p-6 rounded-lg shadow mb-6">
-        <h3 class="text-lg font-semibold mb-2">Listar Cupones (GET /api/coupons)</h3>
+        <h3 class="text-lg font-semibold mb-2" style="margin-top: 20px;">Listar Cupones (GET /api/coupons)</h3>
         <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/api/coupons">Obtener Cupones</a></button>
+        <h3 class="text-lg font-semibold mb-2" style="margin-top: 30px;">Listar todos los usuarios (GET /api/allusers)</h3>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/api/allusers">Obtener Usuarios</a></button>
+        <h3 class="text-lg font-semibold mb-2" style="margin-top: 30px;">Listar jovenes (GET /api/jovenes)</h3>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/api/jovenes">Obtener Jovenes</a></button>
+        <h3 class="text-lg font-semibold mb-2" style="margin-top: 30px;">Listar comercios (GET /api/merchants)</h3>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/api/merchants">Obtener Comercios</a></button>
+        <h3 class="text-lg font-semibold mb-2" style="margin-top: 30px;">Listar admnins (GET /api/admins)</h3>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/api/admins">Obtener Admins</a></button>
       </div>
     </section>
   </main>

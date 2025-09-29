@@ -46,13 +46,17 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
 ### **Endpoints principales**
 | Método | Endpoint                  | Descripción                              | Requiere autenticación? |
 |--------|---------------------------|------------------------------------------|------------------------|
-| POST   | `/api/auth/register`      | Registra un nuevo usuario (cualquier rol) | No                     |
+| POST   | `/api/auth/register`      | Registra un nuevo usuario (cualquier rol) | No                    |
 | POST   | `/api/auth/login`         | Inicia sesión y devuelve un token JWT    | No                     |
 | POST   | `/api/users`              | Crea un nuevo usuario (solo admins)      | Sí (admin)             |
 | GET    | `/api/users`              | Lista todos los usuarios (solo admins)   | Sí (admin)             |
-| POST   | `/api/coupons`            | Crea un nuevo cupón (solo admins)     | Sí (admin)          |
+| GET    | `/api/allusers`           | Lista todos los usuarios (publico - pruebas)   | No               |
+| GET    | `/api/jovenes`            | Lista los jovenes (publico - pruebas)    | No                     |
+| GET    | `/api/merchants`          | Lista los comercios (publico - pruebas)  | No                     |
+| GET    | `/api/admins`             | Lista los admins (publico - pruebas)     | No                     |
+| POST   | `/api/coupons`            | Crea un nuevo cupón (solo admins)        | Sí (admin)             |
 | GET    | `/api/coupons`            | Lista cupones válidos (público)          | No                     |
-| POST   | `/api/coupons/redeem`     | Canjea un cupón (solo merchant)             | Sí (merchant)              |
+| POST   | `/api/coupons/redeem`     | Canjea un cupón (solo merchant)          | Sí (merchant)          |
 
 ### **Cómo probar el backend localmente**
 1. **Requisitos**:
