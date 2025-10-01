@@ -56,6 +56,9 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
 | GET    | `/beneficioJoven/admins`             | Lista los admins (publico - pruebas)     | No                     |
 | POST   | `/beneficioJoven/coupons`            | Crea un nuevo cupón (solo admins)        | Sí (admin)             |
 | GET    | `/beneficioJoven/coupons`            | Lista cupones válidos (público)          | No                     |
+| GET    | `/beneficioJoven/coupons`            | Lista cupones válidos (público)          | No                     |
+| GET    | `/beneficioJoven/coupons/merchant/:id` | Lista cupones por comercio             | No                     |
+| GET    | `/beneficioJoven/users/:id/coupons`    | Lista cupones por usuario (pertenencia)     | No                |
 | POST   | `/beneficioJoven/coupons/redeem`     | Canjea un cupón (solo merchant)          | Sí (merchant)          |
 
 ### **Cómo probar el backend localmente**

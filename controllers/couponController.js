@@ -27,6 +27,49 @@ exports.listCoupons = async (req, res) => {
   }
 };
 
+// Lista cupones filtrados por vendedor
+exports.listByMerchant = async (req, res) => {
+  const { merchantId } = req.params;
+  try {
+    const [coupons] = await db.query('SELECT * FROM coupons WHERE merchant_id = ?', [merchantId]);
+    res.json(coupons);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getUserCoupons = async (req, res) => {
+  const { userId } = req.params;
+
+  // Validación básica
+  if (isNaN(userId) || userId <= 0) {
+    return res.status(400).json({ error: 'ID de usuario inválido' });
+  }
+
+  try {
+    // Hacemos JOIN para traer los datos del cupón (no solo el ID)
+    const [userCoupons] = await db.query(`
+      SELECT 
+        c.id,
+        c.code,
+        c.title,
+        c.description,
+        c.discount_type,
+        c.merchant_id,
+        c.qr_code_url,
+        uc.user_id
+      FROM user_coupons uc
+      INNER JOIN coupons c ON uc.coupon_id = c.id
+      WHERE uc.user_id = ?
+    `, [userId]);
+
+    res.json(userCoupons);
+  } catch (err) {
+    console.error('Error al obtener cupones del usuario:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
 // Canjear cupón (para merchant)
 exports.redeemCoupon = async (req, res) => {
   if (req.user.role !== 'merchant') return res.status(403).json({ error: 'No autorizado' });
