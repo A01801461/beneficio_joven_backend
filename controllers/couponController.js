@@ -20,7 +20,23 @@ exports.createCoupon = async (req, res) => {
 // Listar cupones (público o por merchant)
 exports.listCoupons = async (req, res) => {
   try {
-    const [coupons] = await db.query('SELECT * FROM coupons');
+    const [coupons] = await db.query(`
+      SELECT 
+        c.id AS coupon_id,
+        c.code,
+        c.title,
+        c.description,
+        c.discount_type,
+        c.valid_from,
+        c.valid_until,
+        c.usage_limit,
+        c.qr_code_url,
+        mp.merchant_name,
+        mp.logo_url AS merchant_logo,
+        mp.merchant_type
+    FROM coupons c
+    JOIN merchant_profiles mp ON c.merchant_id = mp.user_id;
+      `);
     res.json(coupons);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -57,10 +73,14 @@ exports.getUserCoupons = async (req, res) => {
         c.discount_type,
         c.merchant_id,
         c.qr_code_url,
-        uc.user_id
-      FROM user_coupons uc
-      INNER JOIN coupons c ON uc.coupon_id = c.id
-      WHERE uc.user_id = ?
+        uc.user_id,
+        mp.logo_url AS merchant_logo,
+        mp.merchant_type,
+        mp.merchant_name
+    FROM user_coupons uc
+    INNER JOIN coupons c ON uc.coupon_id = c.id
+    INNER JOIN merchant_profiles mp ON c.merchant_id = mp.user_id
+    WHERE uc.user_id = ?;
     `, [userId]);
 
     res.json(userCoupons);
