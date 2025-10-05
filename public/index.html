@@ -29,6 +29,34 @@
 
   <main class="container mx-auto px-4 py-8">
 
+
+
+    <!-- Probar el API -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Prueba el API (rutas sin auth para pruebas)</h2>
+
+      <!-- Stats generales -->
+      <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h3 class="text-lg font-semibold mb-2" style="margin-top: 20px;">Estadisticas generales</h3>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/stats">Estadisticas</a></button>
+      </div>
+      <!-- Listar Cupones -->
+      <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h3 class="text-lg font-semibold mb-2" style="margin-top: 20px;">Cupones</h3>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/coupons">Todos los Cupones</a></button>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/coupons/merchant/3">Cupones por vendedor</a></button>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/users/1/coupons">Cupones asignados a Joven</a></button>
+      </div>
+      <!-- Listar usuarios -->
+      <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h3 class="text-lg font-semibold mb-2" style="margin-top: 20px;">Usuarios</h3>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/allusers">Todos los Usuarios</a></button>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/jovenes">Todos los Jovenes</a></button>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/merchants">Todos los Comercios</a></button>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/admins">Todos los Admins</a></button>
+      </div>
+    </section>
+
     <!-- Documentación de Endpoints -->
     <section class="mb-8">
       <h2 class="text-2xl font-semibold mb-4">Endpoints Disponibles</h2>
@@ -71,28 +99,6 @@ curl -X POST http://localhost:3000/beneficioJoven/coupons
       </div>
     </section>
 
-    <!-- Probar el API -->
-    <section class="mb-8">
-      <h2 class="text-2xl font-semibold mb-4">Prueba el API</h2>
-      
-      <!-- Listar Cupones -->
-      <div class="bg-white p-6 rounded-lg shadow mb-6">
-        <h3 class="text-lg font-semibold mb-2" style="margin-top: 20px;">Listar Cupones (GET /beneficioJoven/coupons)</h3>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/coupons">Obtener Cupones</a></button>
-        <h3 class="text-lg font-semibold mb-2" style="margin-top: 20px;">Listar Cupones por vendedor (GET /beneficioJoven/coupons/merchant/:id)</h3>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/coupons/merchant/3">Obtener Cupones</a></button>
-        <h3 class="text-lg font-semibold mb-2" style="margin-top: 20px;">Listar Cupones por usuario (GET /beneficioJoven/users/:id/coupons)</h3>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/users/1/coupons">Obtener Cupones</a></button>
-        <h3 class="text-lg font-semibold mb-2" style="margin-top: 30px;">Listar todos los usuarios (GET /api/allusers)</h3>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/allusers">Obtener Usuarios</a></button>
-        <h3 class="text-lg font-semibold mb-2" style="margin-top: 30px;">Listar jovenes (GET /beneficioJoven/jovenes)</h3>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/jovenes">Obtener Jovenes</a></button>
-        <h3 class="text-lg font-semibold mb-2" style="margin-top: 30px;">Listar comercios (GET /beneficioJoven/merchants)</h3>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/merchants">Obtener Comercios</a></button>
-        <h3 class="text-lg font-semibold mb-2" style="margin-top: 30px;">Listar admnins (GET /beneficioJoven/admins)</h3>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/admins">Obtener Admins</a></button>
-      </div>
-    </section>
   </main>
 </body>
 </html>

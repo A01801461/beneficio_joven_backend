@@ -2,7 +2,6 @@ const db = require('../config/db');
 
 // Crear cupón (para admins)
 exports.createCoupon = async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).json({ error: 'No autorizado' });
   const { code, title, description, discount_type, valid_until, usage_limit, qr_code_url } = req.body;
   const merchant_id = req.user.id;
 
@@ -36,6 +35,31 @@ exports.listCoupons = async (req, res) => {
         mp.merchant_type
     FROM coupons c
     JOIN merchant_profiles mp ON c.merchant_id = mp.user_id;
+      `);
+    res.json(coupons);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Estadisticas generales de cupones
+exports.couponStats = async (req, res) => {
+  try {
+    const [coupons] = await db.query(`
+    SELECT
+        COUNT(DISTINCT c.id) AS total_cupones,
+        (SELECT COUNT(*) FROM users WHERE role = 'user') AS total_jovenes,
+        (SELECT COUNT(*) FROM users WHERE role = 'merchant') AS total_comercios,
+        COUNT(DISTINCT c.merchant_id) AS comercios_con_cupones,
+        COUNT(DISTINCT CASE WHEN up.user_id IS NOT NULL THEN uc.coupon_id END) AS cupones_asignados_a_jovenes,
+        COUNT(DISTINCT CASE WHEN up.user_id IS NULL THEN c.id END) AS cupones_no_asignados,
+        (SELECT COUNT(*) FROM coupon_redemptions) AS total_redenciones,
+        COUNT(DISTINCT cr.coupon_id) AS cupones_unicos_redimidos
+    FROM
+        coupons c
+        LEFT JOIN user_coupons uc ON c.id = uc.coupon_id
+        LEFT JOIN user_profiles up ON uc.user_id = up.user_id
+        LEFT JOIN coupon_redemptions cr ON c.id = cr.coupon_id;
       `);
     res.json(coupons);
   } catch (err) {
@@ -92,7 +116,6 @@ exports.getUserCoupons = async (req, res) => {
 
 // Canjear cupón (para merchant)
 exports.redeemCoupon = async (req, res) => {
-  if (req.user.role !== 'merchant') return res.status(403).json({ error: 'No autorizado' });
   const { coupon_id } = req.body;
   const user_id = req.user.id;
 

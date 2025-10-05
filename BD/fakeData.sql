@@ -36,16 +36,12 @@ INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid
 ('ELECTRO20', '20% de descuento en todo', 'Válido en toda la tienda', 'porcentaje', 3, '2024-04-01', '2024-12-31', 100, 'https://fakeurl.com/qr/electro20.png'),
 ('CAFEBAR15', '15% en tu próxima compra', 'Solo en bebidas', 'porcentaje', 4, '2024-04-01', '2024-06-30', 50, 'https://fakeurl.com/qr/cafemar15.png'),
 ('ELECTRO100', '100 pesos de descuento', 'En compras mayores a $500', 'monto_fijo', 3, '2024-05-01', '2024-08-31', 200, 'https://fakeurl.com/qr/electro100.png'),
--- OXXO
 ('OXXO10', '10% de descuento en snacks', 'Válido en papas, galletas y dulces. Máximo $20 MXN de descuento.', 'porcentaje', 7, '2025-10-01', '2025-12-31', 5000, 'https://fakeurl.com/qr/oxxo10.png'),
--- Six Flags
 ('TERROR2025', 'Boleto 2x1 Festival del Terror', 'Válido de lunes a jueves en octubre 2025. Solo en taquilla.', 'boleto_2x1', 8, '2025-10-01', '2025-10-31', 2000, 'https://fakeurl.com/qr/terror2025.png'),
--- Cinépolis
 ('CINEPOLISVIP', '$50 MXN de descuento en butacas VIP', 'Aplicable en funciones VIP. Compra mínima de $200 MXN.', 'monto_fijo', 9, '2025-10-01', '2026-01-31', 1000, 'https://fakeurl.com/qr/cinepolisvip.png'),
--- Soriana
 ('SORIANA200', '$200 MXN de descuento en compras de $1000+', 'Válido en productos de abarrotes y limpieza.', 'monto_fijo', 10, '2025-10-15', '2025-11-15', 3000, 'https://fakeurl.com/qr/soriana200.png'),
--- Liverpool
-('LIVERPOOLMODA', '15% en ropa y calzado', 'Excluye marcas premium. Máximo $500 MXN de descuento.', 'porcentaje', 11, '2025-10-01', '2025-12-24', 800, 'https://fakeurl.com/qr/liverpoolmoda.png');
+('LIVERPOOLMODA', '15% en ropa y calzado', 'Excluye marcas premium. Máximo $500 MXN de descuento.', 'porcentaje', 11, '2025-10-01', '2025-12-24', 800, 'https://fakeurl.com/qr/liverpoolmoda.png'),
+('OXXO20', '2x1 Sabritass', 'Válido en productos sabritas debajo de $40', '2x1', 7, '2025-10-01', '2025-12-31', 5000, 'https://fakeurl.com/qr/oxxo10.png');
 
 INSERT INTO user_coupons (user_id, coupon_id) VALUES
 (1, 1), -- Juan obtiene ELECTRO20
@@ -61,4 +57,6 @@ INSERT INTO user_coupons (user_id, coupon_id) VALUES
 
 INSERT INTO coupon_redemptions (user_id, coupon_id) VALUES
 (1, 1), -- Juan redime ELECTRO20
+(12, 1),
+(13, 1),
 (2, 3); -- Ana redime ELECTRO100

@@ -3,8 +3,6 @@ const db = require('../config/db');
 // Crear usuario (para admins, similar a register pero sin profileData por simplicidad)
 exports.createUser = async (req, res) => {
   const { email, password, role } = req.body;  // Agrega profileData si necesitas
-  if (req.user.role !== 'admin' && req.user.role !== 'super_admin') return res.status(403).json({ error: 'No autorizado' });
-
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await db.query('INSERT INTO users (email, password, role) VALUES (?, ?, ?)', [email, hashedPassword, role]);
@@ -16,9 +14,6 @@ exports.createUser = async (req, res) => {
 
 // Listar usuarios (para admins)
 exports.listUsers = async (req, res) => {
-  // Agregar esta condicional en el resto de rutas en el futuro, para mayor seguridad
-  if (req.user.role !== 'admin' && req.user.role !== 'super_admin') return res.status(403).json({ error: 'No autorizado' });
-
   try {
     const [users] = await db.query('SELECT id, email, role, created_at FROM users');
     res.json(users);
