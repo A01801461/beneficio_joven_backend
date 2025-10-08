@@ -43,7 +43,7 @@ exports.createCoupon = async (req, res) => {
       'INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid_until, usage_limit, qr_code_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [code, title, description, discount_type, merchant_id, valid_until, usage_limit, generatedQrUrl]
     );
-    res.status(201).json({ message: 'Cupón creado', couponId: result.insertId, qrUrl: generatedQrUrl });
+    res.status(201).json({ message: 'Cupón creado', couponId: result.insertId, qrUrl: "http://localhost:3000" + generatedQrUrl });
   } catch (err) {
     console.error('💥 Error en createCoupon:', err);
     res.status(500).json({ error: err.message });
