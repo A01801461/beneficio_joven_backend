@@ -84,7 +84,7 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
      curl -X POST http://localhost:3000/beneficioJoven/coupons \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer <tu_token>" \
-     -d '{"code":"PROMO20","title":"20% off","description":"Válido en tiendas","discount_type":"Porcentaje","valid_until":"2025-12-31","usage_limit":50,"qr_code_url":"http://example.com/qr2.png"}'
+     -d '{"code":"PROMO20","title":"20% off","description":"Válido en tiendas","discount_type":"Porcentaje","valid_until":"2025-12-31", "merchant_id":3, "usage_limit":50}'
      ```
    - Accede desde la red local con la IP que aparece al correr el servidor (e.g., `http://192.168.1.100:3000`).
 
