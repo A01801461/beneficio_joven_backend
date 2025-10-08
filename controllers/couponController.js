@@ -150,14 +150,54 @@ exports.getUserCoupons = async (req, res) => {
         mp.logo_url AS merchant_logo,
         mp.merchant_type,
         mp.merchant_name
-    FROM user_coupons uc
-    INNER JOIN coupons c ON uc.coupon_id = c.id
+    FROM coupons c
     INNER JOIN merchant_profiles mp ON c.merchant_id = mp.user_id
-    WHERE uc.user_id = ?;
+    WHERE c.code = ?;
     `, [userId]);
     res.json(userCoupons);
   } catch (err) {
     console.error('Error al obtener cupones del usuario:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+exports.validateCoupon = async (req, res) => {
+  const { code } = req.params;
+
+  // 1. Validación básica: verificar si 'code' existe y no es vacío
+  if (!code) {
+    return res.status(400).json({ error: 'No se adjuntó un código' });
+  }
+
+  try {
+    // 2. Hacemos JOIN para traer los datos del cupón (no solo el ID)
+    const [results] = await db.query(`
+      SELECT 
+        c.id,
+        c.code,
+        c.title,
+        c.description,
+        c.discount_type,
+        DATE_FORMAT(c.valid_until, "%Y-%m-%d") AS valid_until,
+        c.merchant_id,
+        mp.logo_url AS merchant_logo,
+        mp.merchant_type,
+        mp.merchant_name
+      FROM coupons c
+      INNER JOIN merchant_profiles mp ON c.merchant_id = mp.user_id
+      WHERE c.code = ?;
+    `, [code]);
+
+    // 3. Verificar si se encontró el cupón
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Cupón no encontrado' });
+    }
+
+    const couponData = results[0];
+    res.json(couponData);
+
+  } catch (err) {
+    console.error('Error al validar cupón:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
