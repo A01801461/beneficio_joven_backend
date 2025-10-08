@@ -37,13 +37,16 @@ exports.createCoupon = async (req, res) => {
 
   try {
     // Siempre generar QR basado en el code
-    const generatedQrUrl = await generateQR(code);
+    const generatedQrPath = await generateQR(code); // Asumiendo que esto devuelve algo como '/qrcodes/OXXO40.png'
+
+    // Concatenar la URL base (usa una variable de entorno como process.env.BASE_URL en producción)
+    const fullQrUrl = `http://localhost:3000${generatedQrPath || ''}`;
 
     const [result] = await db.query(
       'INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid_until, usage_limit, qr_code_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [code, title, description, discount_type, merchant_id, valid_until, usage_limit, generatedQrUrl]
+      [code, title, description, discount_type, merchant_id, valid_until, usage_limit, fullQrUrl]
     );
-    res.status(201).json({ message: 'Cupón creado', couponId: result.insertId, qrUrl: "http://localhost:3000" + generatedQrUrl });
+    res.status(201).json({ message: 'Cupón creado', couponId: result.insertId, qrUrl: fullQrUrl });
   } catch (err) {
     console.error('💥 Error en createCoupon:', err);
     res.status(500).json({ error: err.message });
