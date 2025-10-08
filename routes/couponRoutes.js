@@ -4,7 +4,8 @@ const { verifyToken, checkRole } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.post('/coupons', verifyToken, checkRole(['admin', 'super_admin']), couponController.createCoupon);
+// router.post('/coupons', verifyToken, checkRole(['admin', 'super_admin']), couponController.createCoupon);
+router.post('/coupons', couponController.createCoupon);
 router.get('/coupons', couponController.listCoupons);  // Público
 router.get('/stats', couponController.couponStats);  // Público
 router.get('/coupons/merchant/:merchantId', couponController.listByMerchant);

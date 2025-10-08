@@ -1,17 +1,51 @@
 const db = require('../config/db');
+const QRCode = require('qrcode');
+const fs = require('fs');
+const path = require('path');
+
+// Función para generar QRs
+const generateQR = async (code) => {
+  const qrDir = path.join(__dirname, '..', 'qrcodes');
+  if (!fs.existsSync(qrDir)) {
+    fs.mkdirSync(qrDir, { recursive: true });
+  }
+
+  const filename = `${code}.png`;
+  const filePath = path.join(qrDir, filename);
+
+  try {
+    await QRCode.toFile(filePath, code, {
+      width: 256,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    });
+    console.log('✅ QR generado exitosamente');
+    return `/qrcodes/${filename}`;
+  } catch (error) {
+    console.error('❌ Error en generateQR:', error);  // Mantengo este para debug en producción si falla
+    throw new Error(`Error al generar QR: ${error.message}`);
+  }
+};
 
 // Crear cupón (para admins)
 exports.createCoupon = async (req, res) => {
-  const { code, title, description, discount_type, valid_until, usage_limit, qr_code_url } = req.body;
-  const merchant_id = req.user.id;
+  const { code, title, description, discount_type, valid_until, merchant_id, usage_limit } = req.body;  // Removí qr_code_url del destructuring
+  console.log('📥 Request body recibido:', { code, merchant_id });
 
   try {
+    // Siempre generar QR basado en el code
+    const generatedQrUrl = await generateQR(code);
+
     const [result] = await db.query(
       'INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid_until, usage_limit, qr_code_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [code, title, description, discount_type, merchant_id, valid_until, usage_limit, qr_code_url]
+      [code, title, description, discount_type, merchant_id, valid_until, usage_limit, generatedQrUrl]
     );
-    res.status(201).json({ message: 'Cupón creado', couponId: result.insertId });
+    res.status(201).json({ message: 'Cupón creado', couponId: result.insertId, qrUrl: generatedQrUrl });
   } catch (err) {
+    console.error('💥 Error en createCoupon:', err);
     res.status(500).json({ error: err.message });
   }
 };

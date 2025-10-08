@@ -43,6 +43,28 @@ INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid
 ('LIVERPOOLMODA', '15% en ropa y calzado', 'Excluye marcas premium. Máximo $500 MXN de descuento.', 'porcentaje', 11, '2025-10-01', '2025-12-24', 800, 'https://fakeurl.com/qr/liverpoolmoda.png'),
 ('OXXO20', '2x1 Sabritass', 'Válido en productos sabritas debajo de $40', '2x1', 7, '2025-10-01', '2025-12-31', 5000, 'https://fakeurl.com/qr/oxxo10.png');
 
+    {
+        "code": "OXXO30",
+        "title": "20% de descuento en Hielo Fiesta",
+        "description": "20% de descuento en Hielo Fiesta",
+        "discount_type": "Porcentaje",
+        "merchant_id": 7,
+        "valid_until": "2025-12-31",
+        "usage_limit": 50,
+        "qr_code_url": "http://example.com/qr1.png"
+    }
+
+    {
+        "code": "MIERCOLES2X1",
+        "title": "2x1 en salas regulares, el miercoles",
+        "description": "2x1 en boletos de salas regulares, solo aplica los miercoles.",
+        "discount_type": "boleto_2x1",
+        "merchant_id": 9,
+        "valid_until": "2025-12-31",
+        "usage_limit": 50,
+        "qr_code_url": "http://example.com/qr1.png"
+    }
+
 INSERT INTO user_coupons (user_id, coupon_id) VALUES
 (1, 1), -- Juan obtiene ELECTRO20
 (1, 2), -- Juan obtiene CAFEBAR15
