@@ -15,17 +15,7 @@ exports.createUser = async (req, res) => {
 // Listar usuarios (para admins)
 exports.listUsers = async (req, res) => {
   try {
-    const [users] = await db.query('SELECT id, email, role, created_at FROM users');
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// Listar usuarios (publico) - SOLO PARA TESTS
-exports.listUsersPub = async (req, res) => {
-  try {
-    const [users] = await db.query('SELECT id, email, role, created_at FROM users');
+    const [users] = await db.query('SELECT id, email, role, DATE_FORMAT(created_at, "%Y-%m-%d") AS created_at FROM users');
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -55,7 +45,7 @@ exports.listAdmins = async (req, res) => {
 // Listar comercios (publico) - SOLO PARA TESTS
 exports.listJovenes = async (req, res) => {
   try {
-    const [users] = await db.query('SELECT * FROM user_profiles');
+    const [users] = await db.query('SELECT user_id, full_name, curp, DATE_FORMAT(birth_date, "%Y-%m-%d") AS birth_date FROM user_profiles');
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });

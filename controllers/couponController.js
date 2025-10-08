@@ -26,8 +26,8 @@ exports.listCoupons = async (req, res) => {
         c.title,
         c.description,
         c.discount_type,
-        c.valid_from,
-        c.valid_until,
+        DATE_FORMAT(c.valid_from, "%Y-%m-%d") AS valid_from,
+        DATE_FORMAT(c.valid_until, "%Y-%m-%d") AS valid_until,
         c.usage_limit,
         c.qr_code_url,
         mp.merchant_name,
@@ -71,7 +71,21 @@ exports.couponStats = async (req, res) => {
 exports.listByMerchant = async (req, res) => {
   const { merchantId } = req.params;
   try {
-    const [coupons] = await db.query('SELECT * FROM coupons WHERE merchant_id = ?', [merchantId]);
+    const [coupons] = await db.query(`
+      SELECT 
+        id,
+        code,
+        title,
+        description,
+        discount_type,
+        merchant_id,
+        DATE_FORMAT(valid_from, "%Y-%m-%d") AS valid_from,
+        DATE_FORMAT(valid_until, "%Y-%m-%d") AS valid_until,
+        usage_limit,
+        qr_code_url
+      FROM coupons 
+      WHERE merchant_id = ?`,
+      [merchantId]);
     res.json(coupons);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -95,6 +109,7 @@ exports.getUserCoupons = async (req, res) => {
         c.title,
         c.description,
         c.discount_type,
+        DATE_FORMAT(c.valid_until, "%Y-%m-%d") AS valid_until,
         c.merchant_id,
         c.qr_code_url,
         uc.user_id,
@@ -106,7 +121,6 @@ exports.getUserCoupons = async (req, res) => {
     INNER JOIN merchant_profiles mp ON c.merchant_id = mp.user_id
     WHERE uc.user_id = ?;
     `, [userId]);
-
     res.json(userCoupons);
   } catch (err) {
     console.error('Error al obtener cupones del usuario:', err);
