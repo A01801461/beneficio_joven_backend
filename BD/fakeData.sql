@@ -50,8 +50,7 @@ INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid
         "discount_type": "Porcentaje",
         "merchant_id": 7,
         "valid_until": "2025-12-31",
-        "usage_limit": 50,
-        "qr_code_url": "http://example.com/qr1.png"
+        "usage_limit": 50
     }
 
     {
