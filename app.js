@@ -1,11 +1,20 @@
-const express = require('express');
+//----------------------------------------------------------
+// app.js
+//
+// Archivo principal, inicia el servidor.
+//
+// Fecha: 11-Oct-2025
+// Autores: Equipo 2 - Gpo 401
+//----------------------------------------------------------
+
+const express = require('express'); // express para el servidor web
 const bodyParser = require('body-parser');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv');// requerir constantes de .env
 const os = require('os');  // Para obtener IP de red
 const db = require('./config/db');  // Importar DB para verificar conexión
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const couponRoutes = require('./routes/couponRoutes');
+const authRoutes = require('./routes/authRoutes'); // importar rutas de autenticacion
+const userRoutes = require('./routes/userRoutes'); // importar rutas de usuarios
+const couponRoutes = require('./routes/couponRoutes'); // importar rutas de cupones
 const path = require('path');  // Para manejar rutas de archivos
 const cors = require('cors');  // Para habilitar CORS
 
@@ -55,6 +64,7 @@ app.listen(PORT, HOST, () => {
     if (localIp !== '127.0.0.1') break;
   }
 
+  // rutas en las que se esta hosteando
   console.log(`Servidor corriendo en puerto ${PORT}`);
   console.log(`Local: http://localhost:${PORT}`);
   console.log(`Network: http://${localIp}:${PORT}`);

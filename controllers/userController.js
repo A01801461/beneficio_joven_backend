@@ -1,6 +1,15 @@
-const db = require('../config/db');
+//----------------------------------------------------------
+// /controllers/userController.js
+//
+// Controlador de autenticacion (login & register).
+//
+// Fecha: 11-Oct-2025
+// Autores: Equipo 2 - Gpo 401
+//----------------------------------------------------------
 
-// Crear usuario (para admins, similar a register pero sin profileData por simplicidad)
+const db = require('../config/db'); // importando archivo de configuracion de conexion a BD
+
+// Controlador (funcion) para crear usuario (para admins, similar a register)
 exports.createUser = async (req, res) => {
   const { email, password, role } = req.body;  // Agrega profileData si necesitas
   try {
@@ -12,9 +21,10 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// Listar usuarios (para admins)
+// Controlador (funcion) para listar usuarios
 exports.listUsers = async (req, res) => {
   try {
+    // listar todos los usuarios (de todos los roles)
     const [users] = await db.query('SELECT id, email, role, DATE_FORMAT(created_at, "%Y-%m-%d") AS created_at FROM users');
     res.json(users);
   } catch (err) {
@@ -22,9 +32,10 @@ exports.listUsers = async (req, res) => {
   }
 };
 
-// Listar comercios (publico) - SOLO PARA TESTS
+// Controlador (funcion) para listar comercios
 exports.listMerchants = async (req, res) => {
   try {
+    // listar todos los comercios
     const [users] = await db.query('SELECT * FROM merchant_profiles');
     res.json(users);
   } catch (err) {
@@ -32,9 +43,10 @@ exports.listMerchants = async (req, res) => {
   }
 };
 
-// Listar comercios (publico) - SOLO PARA TESTS
+// Controlador (funcion) para listar comercios
 exports.listAdmins = async (req, res) => {
   try {
+    // listar todos los admins
     const [users] = await db.query('SELECT * FROM admin_profiles');
     res.json(users);
   } catch (err) {
@@ -42,9 +54,10 @@ exports.listAdmins = async (req, res) => {
   }
 };
 
-// Listar comercios (publico) - SOLO PARA TESTS
+// Controlador (funcion) para listar comercios
 exports.listJovenes = async (req, res) => {
   try {
+    // listar todos los jovenes
     const [users] = await db.query('SELECT user_id, full_name, curp, DATE_FORMAT(birth_date, "%Y-%m-%d") AS birth_date FROM user_profiles');
     res.json(users);
   } catch (err) {

@@ -11,6 +11,7 @@ El proyecto busca impulsar la participación juvenil y facilitar el acceso a ben
 
 1. **Aplicación móvil (Kotlin – Android)**
 
+   - Codigo: https://github.com/PeritiaCodex/BeneficioJoven
    - Registro e inicio de sesión de los jóvenes beneficiarios.
    - Consulta de cupones y promociones disponibles.
    - Canje digital mediante código QR o clave única.
@@ -18,6 +19,7 @@ El proyecto busca impulsar la participación juvenil y facilitar el acceso a ben
 
 2. **Panel de administración (HTML, CSS, JS)**
 
+   - Codigo: https://github.com/A01801461/beneficio_joven_paneles
    - Gestión de usuarios (jóvenes registrados).
    - Registro y administración de comercios participantes.
    - Creación, edición y seguimiento de cupones/promociones.
@@ -25,6 +27,8 @@ El proyecto busca impulsar la participación juvenil y facilitar el acceso a ben
   
 3. **Servidor Backend (API + lógica de negocio)**
 
+   - Codigo: https://github.com/A01801461/beneficio_joven_backend
+   - Alojado en https://bj-api.site
    - Se encarga de la autenticación de usuarios y roles.
    - Administra el ciclo de vida de los cupones (creación, validación, redención).
    - Expone un API REST para que lo consuman la aplicación móvil y los paneles web.
@@ -33,35 +37,38 @@ El proyecto busca impulsar la participación juvenil y facilitar el acceso a ben
 
 ## 🚀 Detalles del Backend
 
-El backend está construido con **Node.js** y **Express.js**, utilizando una base de datos **MySQL** (compatible con XAMPP para desarrollo local) para almacenar información sobre usuarios, comercios, cupones y redenciones. Está diseñado con buenas prácticas para ser escalable, seguro y fácil de migrar a entornos como **AWS** (usando RDS para la base de datos y EC2/Lambda para el servidor).
+El backend está construido con **Node.js** y **Express.js**, utilizando una base de datos **MySQL** para almacenar información sobre usuarios, comercios, cupones, redenciones, etc. Está diseñado con buenas prácticas para ser escalable, seguro y fácil de migrar a entornos como **AWS** (usando RDS para la base de datos y EC2), o un **VPS** de cualquier otro proveedor, como donde esta alojado actualmente en https://bj-api.site .
 
 ### **Características principales**
 - **Autenticación segura**: Usa JSON Web Tokens (JWT) para autenticar usuarios y proteger endpoints sensibles. Soporta roles (`user`, `merchant`, `admin`, `super_admin`) con permisos diferenciados.
 - **Gestión de usuarios**: Registro, login, creación y listado de usuarios (para admins).
-- **Gestión de cupones**: Creación (por comercios), listado (público) y redención (por usuarios).
+- **Gestión de cupones**: Creación, listado y redención.
 - **Base de datos optimizada**: Tablas con índices y claves foráneas para garantizar rendimiento y consistencia (e.g., `users`, `coupons`, `user_coupons`).
-- **Acceso en red local**: Configurado para ser accesible desde cualquier dispositivo en la red WiFi local, ideal para pruebas colaborativas.
-- **Preparado para AWS**: Estructurado para migrar fácilmente a AWS RDS (base de datos) y S3 (para subir QR codes o logos).
+- **Acceso en red local**: Configurado para ser provado localmente facilmente con XAMMP.
+- **Preparado para AWS**: Estructurado para migrar fácilmente a un VPS u otro entorno.
 
 ### **Endpoints principales**
-| Método | Endpoint                  | Descripción                              | Requiere autenticación? |
-|--------|---------------------------|------------------------------------------|------------------------|
-| POST   | `/beneficioJoven/auth/register`      | Registra un nuevo usuario (cualquier rol) | No                    |
-| POST   | `/beneficioJoven/auth/login`         | Inicia sesión y devuelve un token JWT    | No                     |
-| POST   | `/beneficioJoven/users`              | Crea un nuevo usuario (solo admins)      | Sí (admin)             |
-| GET    | `/beneficioJoven/users`              | Lista todos los usuarios (solo admins)   | Sí (admin)             |
-| GET    | `/beneficioJoven/allusers`           | Lista todos los usuarios (publico - pruebas)   | No               |
-| GET    | `/beneficioJoven/jovenes`            | Lista los jovenes (publico - pruebas)    | No                     |
-| GET    | `/beneficioJoven/merchants`          | Lista los comercios (publico - pruebas)  | No                     |
-| GET    | `/beneficioJoven/admins`             | Lista los admins (publico - pruebas)     | No                     |
-| POST   | `/beneficioJoven/coupons`            | Crea un nuevo cupón (solo admins)        | Sí (admin)             |
-| GET    | `/beneficioJoven/coupons`            | Lista cupones válidos (público)          | No                     |
-| GET    | `/beneficioJoven/coupons`            | Lista cupones válidos (público)          | No                     |
-| GET    | `/beneficioJoven/coupons/merchant/:id` | Lista cupones por comercio             | No                     |
-| GET    | `/beneficioJoven/users/:id/coupons`    | Lista cupones por usuario (pertenencia)     | No                |
-| POST   | `/beneficioJoven/coupons/redeem`     | Canjea un cupón (solo merchant)          | Sí (merchant)          |
+| Método | Endpoint                  | Descripción                              |
+|--------|---------------------------|------------------------------------------|
+| GET    | `/beneficioJoven/stats`      | Estadistidisticas generales del sistema |
+| POST   | `/beneficioJoven/auth/register`      | Registra un nuevo usuario (cualquier rol) |
+| POST   | `/beneficioJoven/auth/login`         | Inicia sesión y devuelve un token JWT    |
+| POST   | `/beneficioJoven/users`              | Crea un nuevo usuario      |
+| GET    | `/beneficioJoven/users`              | Lista todos los usuarios   |
+| GET    | `/beneficioJoven/allusers`           | Lista todos los usuarios   |
+| GET    | `/beneficioJoven/jovenes`            | Lista los jovenes    |
+| GET    | `/beneficioJoven/merchants`          | Lista los comercios  |
+| GET    | `/beneficioJoven/admins`             | Lista los admins     |
+| POST   | `/beneficioJoven/coupons`            | Crea un nuevo cupón           |
+| GET    | `/beneficioJoven/coupons`            | Lista cupones válidos         |
+| GET    | `/beneficioJoven/coupons`            | Lista cupones válidos         |
+| GET    | `/beneficioJoven/coupons/merchant/:id` | Lista cupones por comercio    |
+| GET    | `/beneficioJoven/users/:id/coupons`    | Lista cupones por usuario     |
+| POST   | `/beneficioJoven/validar/:code`     | Validar existencia de un cupón   |
+| POST   | `/beneficioJoven/coupons/redeem`     | Canjea un cupón                 |
 
-### **Cómo probar el backend localmente**
+### **Cómo probar el backend localmente **
+
 1. **Requisitos**:
    - Instala **Node.js** (v18+).
    - Instala **XAMPP** con MySQL.
@@ -74,31 +81,43 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
    - Corre el servidor: `node app.js`.
 
 3. **Pruebas**:
-   - Usa **Postman** o **curl** para probar los endpoints.
+   - Usa el comando **curl** para probar los endpoints.
    - Ejemplo para listar cupones:
      ```bash
      curl http://localhost:3000/beneficioJoven/coupons
      ```
-   - Ejemplo para crear un cupón (requiere token de merchant):
-     ```bash
-     curl -X POST http://localhost:3000/beneficioJoven/coupons \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer <tu_token>" \
-     -d '{"code":"PROMO20","title":"20% off","description":"Válido en tiendas","discount_type":"Porcentaje","valid_until":"2025-12-31", "merchant_id":3, "usage_limit":50}'
-     ```
-   - Accede desde la red local con la IP que aparece al correr el servidor (e.g., `http://192.168.1.100:3000`).
+   - Accede desde la red local con la IP que aparece al correr el servidor para ver mas info del API.
 
 ### **Estructura del código**
 - **`app.js`**: Inicia el servidor y configura rutas.
 - **`config/db.js`**: Conexión a MySQL.
 - **`routes/`**: Define las URLs del API.
 - **`controllers/`**: Lógica de negocio para cada endpoint.
-- **`middleware/auth.js`**: Verifica tokens JWT.
+- **`middleware/auth.js`**: Verifica tokens JWT y roles.
 
-### **Próximos pasos**
-- **Integración con AWS**: Migrar la base de datos a RDS y usar S3 para almacenar QR codes y logos.
-- **Expansión de endpoints**: Agregar filtros para cupones (por comercio o tipo) y reportes avanzados.
-- **Pruebas colaborativas**: Usar la homepage del API (ver abajo) para que los colaboradores exploren los endpoints.
+---
+
+## 🔒 Seguridad y Autenticación
+
+El sistema cuenta con una infraestructura de autenticación y control de acceso completa, diseñada para garantizar la seguridad de los datos y la integridad de las operaciones.  
+Sin embargo, **por motivos de pruebas y desarrollo**, las medidas de seguridad no se encuentran activas en todos los endpoints de la versión actualmente desplegada ni del repositorio público.  
+Esto permite que las aplicaciones cliente (móvil y panel) puedan realizar pruebas funcionales sin requerir tokens válidos o usuarios reales.  
+
+### ⚙️ Implementaciones de seguridad incluidas en el código
+
+Aunque no todas estén activas, el backend **ya incluye la lógica completa** para:
+- Autenticación basada en JWT (JSON Web Tokens)  
+- Gestión de sesiones y expiración de tokens 
+- Validación de roles (`user`, `merchant`, `admin` o `super_admin`)
+- Encriptación de contraseñas (Todas las contraseñas se cifran con **bcrypt** antes de ir a la BD)
+- Validación de datos y sanitización de entrada (Uso de **Joi** y middleware de validación para evitar inyecciones SQL y datos corruptos.) 
+- Buenas prácticas de CORS y variables de entorno (Configuración segura mediante `.env`)
+
+### ⚠️ Estado actual (versión de pruebas)
+
+- Los endpoints en `https://bj-api.site` y el código del repositorio **usan datos ficticios** para proteger la información real.  
+- La **verificación de tokens y roles** está desactivada temporalmente en la mayoría de rutas para facilitar la integración y pruebas con los clientes móviles y web.  
+- En entornos de producción o cuando se migre a infraestructura oficial, **la capa de seguridad se puede reactivar muy fácilmente** habilitando el middleware `auth.js` en las rutas correspondientes.
 
 ---
 

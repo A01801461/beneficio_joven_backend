@@ -1,17 +1,28 @@
-const express = require('express');
-const userController = require('../controllers/userController');
-const { verifyToken, checkRole } = require('../middleware/auth');  // Importa ambos
+//----------------------------------------------------------
+// /routes/userRoutes.js
+//
+// Rutas de endpoints de usuarios (consultar y filtrar).
+//
+// IMPORTANTE: Varias rutas AUN no tienen implementada la autenticación ni seguridad implementadas (para pruebas)
+//
+// Fecha: 11-Oct-2025
+// Autores: Equipo 2 - Gpo 401
+//----------------------------------------------------------
+
+const express = require('express'); // importando express
+const userController = require('../controllers/userController'); // importando controlador de usuarios
+const { verifyToken, checkRole } = require('../middleware/auth');  // Importando middleware
 
 const router = express.Router();
 
-// metodos post
-router.post('/users', verifyToken, checkRole(['admin', 'super_admin']), userController.createUser);
+// POS
+router.post('/users', verifyToken, checkRole(['admin', 'super_admin']), userController.createUser); // crear usuario (con seguridad)
 
-// metodos get
-router.get('/users', verifyToken, checkRole(['admin', 'super_admin']), userController.listUsers);
-router.get('/allusers', userController.listUsers); // igual que /users pero sin auth
-router.get('/merchants', userController.listMerchants);
-router.get('/admins', userController.listAdmins);
-router.get('/jovenes', userController.listJovenes);
+// GET
+router.get('/users', verifyToken, checkRole(['admin', 'super_admin']), userController.listUsers); // verificar token (con seguridad)
+router.get('/allusers', userController.listUsers); // listar todos los usuario (sin seguridad)
+router.get('/merchants', userController.listMerchants); // listar comercios (sin seguridad)
+router.get('/admins', userController.listAdmins); // listar admins (sin seguridad)
+router.get('/jovenes', userController.listJovenes); // listar jovenes (sin seguridad)
 
 module.exports = router;

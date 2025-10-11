@@ -1,51 +1,67 @@
-const db = require('../config/db');
-const QRCode = require('qrcode');
-const fs = require('fs');
-const path = require('path');
+//----------------------------------------------------------
+// /controllers/couponController.js
+//
+// Controlador de autenticacion (login & register).
+//
+// Fecha: 11-Oct-2025
+// Autores: Equipo 2 - Gpo 401
+//----------------------------------------------------------
 
+const db = require('../config/db'); // importando archivo de configuracion de conexion a BD
+const QRCode = require('qrcode'); // importando qrcode (node module para creacion de QRs)
+const fs = require('fs'); // importando sf (File System) (node module para manipulacion de archivos)
+const path = require('path'); // importando qrcode (node module para trabajar con rutas)
+
+// -----
 // Función para generar QRs
 const generateQR = async (code) => {
-  const qrDir = path.join(__dirname, '..', 'qrcodes');
+  // verificar / crear carpeta con QRs
+  const qrDir = path.join(__dirname, '..', 'qrcodes'); // carpeta con QRs
   if (!fs.existsSync(qrDir)) {
     fs.mkdirSync(qrDir, { recursive: true });
   }
 
+  // nombre y lugar de guardado para el QR
   const filename = `${code}.png`;
   const filePath = path.join(qrDir, filename);
 
+  // Generando QR con info del 'code' del cupon
   try {
     await QRCode.toFile(filePath, code, {
-      width: 256,
+      width: 256, //256x256
       margin: 2,
       color: {
-        dark: '#000000',
+        dark: '#000000', // blanco & negro
         light: '#FFFFFF'
       }
     });
-    console.log('✅ QR generado exitosamente');
-    return `/qrcodes/${filename}`;
+    console.log('✅ QR generado exitosamente'); // mensaje de control si se genera correctamente
+    return `/qrcodes/${filename}`; // devuelve path del QR
   } catch (error) {
-    console.error('❌ Error en generateQR:', error);  // Mantengo este para debug en producción si falla
+    console.error('❌ Error en generateQR:', error);  // ERROR: QR no se pudo generar
     throw new Error(`Error al generar QR: ${error.message}`);
   }
 };
 
-// Crear cupón (para admins)
+// -----
+// Controlador (funcion) para crear cupón
 exports.createCoupon = async (req, res) => {
-  const { code, title, description, discount_type, valid_until, merchant_id, usage_limit } = req.body;  // Removí qr_code_url del destructuring
-  console.log('📥 Request body recibido:', { code, merchant_id });
+  const { code, title, description, discount_type, valid_until, merchant_id, usage_limit } = req.body;
+  console.log('📥 Request body recibido:', { code, merchant_id }); // mensaje de control de inicio de proceso
 
   try {
-    // Siempre generar QR basado en el code
-    const generatedQrPath = await generateQR(code); // Asumiendo que esto devuelve algo como '/qrcodes/OXXO40.png'
+    // llamando generador de QRs con info 'code'
+    const generatedQrPath = await generateQR(code);
 
-    // Concatenar la URL base (usa una variable de entorno como process.env.BASE_URL en producción)
-    const fullQrUrl = `http://localhost:3000${generatedQrPath || ''}`;
+    // Concatenar la URL base con path del QR
+    const fullQrUrl = `http://localhost:3000${generatedQrPath || ''}`; // localhost para pruebas locales
 
+    // insertando todos los datos a la BD
     const [result] = await db.query(
       'INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid_until, usage_limit, qr_code_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [code, title, description, discount_type, merchant_id, valid_until, usage_limit, fullQrUrl]
     );
+    // Mensajes de control
     res.status(201).json({ message: 'Cupón creado', couponId: result.insertId, qrUrl: fullQrUrl });
   } catch (err) {
     console.error('💥 Error en createCoupon:', err);
@@ -53,8 +69,10 @@ exports.createCoupon = async (req, res) => {
   }
 };
 
-// Listar cupones (público o por merchant)
+// -----
+// Controlador (funcion) para listar cupones
 exports.listCoupons = async (req, res) => {
+  // Query para listar cupones con JOIN para datos del comercio
   try {
     const [coupons] = await db.query(`
       SELECT 
@@ -79,9 +97,11 @@ exports.listCoupons = async (req, res) => {
   }
 };
 
-// Estadisticas generales de cupones
+// -----
+// Controlador (funcion) para ver las estadisticas generales del sistema
 exports.couponStats = async (req, res) => {
   try {
+    // Query para obtener estadisticas generales del sistema
     const [coupons] = await db.query(`
     SELECT
         COUNT(DISTINCT c.id) AS total_cupones,
@@ -104,10 +124,13 @@ exports.couponStats = async (req, res) => {
   }
 };
 
-// Lista cupones filtrados por vendedor
+// -----
+// Controlador (funcion) para listar cupones filtrados por vendedor
 exports.listByMerchant = async (req, res) => {
+  // recibe id del comercio
   const { merchantId } = req.params;
   try {
+  // Query para listar cupones de x comercio
     const [coupons] = await db.query(`
       SELECT 
         id,
@@ -129,7 +152,10 @@ exports.listByMerchant = async (req, res) => {
   }
 };
 
+// -----
+// Controlador (funcion) para listar cupones filtrados por joven
 exports.getUserCoupons = async (req, res) => {
+    // recibe id del joven
   const { userId } = req.params;
 
   // Validación básica
@@ -138,7 +164,7 @@ exports.getUserCoupons = async (req, res) => {
   }
 
   try {
-    // Hacemos JOIN para traer los datos del cupón (no solo el ID)
+    // Query para listar cupones de x joven
     const [userCoupons] = await db.query(`
       SELECT 
         c.id,
@@ -164,16 +190,18 @@ exports.getUserCoupons = async (req, res) => {
   }
 };
 
+// -----
+// Controlador (funcion) para validar cupones
 exports.validateCoupon = async (req, res) => {
-  const { code } = req.params;
+  const { code } = req.params; // recibe 'code' de cupon a validar
 
-  // 1. Validación básica: verificar si 'code' existe y no es vacío
+  // Validación básica
   if (!code) {
     return res.status(400).json({ error: 'No se adjuntó un código' });
   }
 
   try {
-    // 2. Hacemos JOIN para traer los datos del cupón (no solo el ID)
+    // Query para ver si el usuario con 'code' x existe
     const [results] = await db.query(`
       SELECT 
         c.id,
@@ -191,7 +219,7 @@ exports.validateCoupon = async (req, res) => {
       WHERE c.code = ?;
     `, [code]);
 
-    // 3. Verificar si se encontró el cupón
+    // Verificar si se encontró el cupón
     if (results.length === 0) {
       return res.status(404).json({ error: 'Cupón no encontrado' });
     }
@@ -205,18 +233,18 @@ exports.validateCoupon = async (req, res) => {
   }
 };
 
-// Canjear cupón (para merchant)
+// -----
+// Controlador (funcion) para canjear cupón
 exports.redeemCoupon = async (req, res) => {
   const { coupon_id } = req.body;
   const user_id = req.user.id;
 
   try {
-    // Verificar si ya obtenido
+    // Verificar si el usuario si tiene el cupon
     const [[existing]] = await db.query('SELECT * FROM user_coupons WHERE user_id = ? AND coupon_id = ?', [user_id, coupon_id]);
     if (existing) return res.status(400).json({ error: 'Cupón ya obtenido' });
 
-    // Insertar en user_coupons y redemptions (asumiendo canje inmediato)
-    await db.query('INSERT INTO user_coupons (user_id, coupon_id) VALUES (?, ?)', [user_id, coupon_id]);
+    // Registrar uso del cupon
     await db.query('INSERT INTO coupon_redemptions (user_id, coupon_id) VALUES (?, ?)', [user_id, coupon_id]);
 
     res.json({ message: 'Cupón canjeado' });

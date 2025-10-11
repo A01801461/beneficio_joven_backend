@@ -1,7 +1,12 @@
 -- -----------------------------------------------------------
--- Generación de Datos de Calidad para Sistema de Cupones
--- Total de Entidades: 35 Usuarios (5 Admins, 10 Comercios, 20 Clientes), 30 Cupones, 60 Cupones Obtenidos, 40 Redenciones.
--- -----------------------------------------------------------
+-- qualityData.sql
+--
+-- Generación de datos (falsos) de calidad para pruebas del sistema de Beneficio Joven
+-- Total: 35 Usuarios (5 Admins, 10 Comercios, 20 Clientes), 30 Cupones, 60 Cupones Obtenidos, 40 Redenciones.
+--
+-- Fecha: 11-Oct-2025
+-- Autores: Equipo 2 - Gpo 401
+-- ----------------------------------------------------------
 
 -- Deshabilitar la verificación de claves foráneas para permitir la inserción de datos en orden no estricto (especialmente para IDs fijos en 'users').
 SET FOREIGN_KEY_CHECKS = 0;
@@ -116,58 +121,61 @@ INSERT INTO user_profiles (user_id, full_name, curp, birth_date, municipality) V
 -- =========================================================
 -- 5. Tabla: coupons (30 Registros)
 --    merchant_id se refiere a los IDs 6-15
+--    IMPORTANTE: insertar desde endpoint con 'curl' o panel de admins
+--                de admins, para garantizar generacion de QRs, pues
+--                los URLs de estos inserts son del API deployeada.
 -- =========================================================
 
 INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid_from, valid_until, usage_limit, qr_code_url) VALUES
 -- Cupones Cinépolis (ID 8)
-('MIERCOLES2X1', '2x1 en salas regulares, el miercoles', '2x1 en boletos de salas regulares, solo aplica los miércoles y no es válido en festivos.', 'boleto_2x1', 8, '2025-01-01', '2025-12-31', 50, 'https://example.com/qrcodes/MIERCOLES2X1'),
-('CINE30SNACK', '30% en Palomitas y Refresco grandes', 'Aplica en combo palomitas y refresco grandes. No incluye upgrades.', 'Porcentaje', 8, '2025-10-01', '2026-03-31', 25, 'https://example.com/qrcodes/CINE30SNACK'),
-('CINEROMANCE', 'Boleto + Hot-Dog por $100', 'Válido para funciones de lunes a viernes antes de las 5 PM.', 'Precio fijo', 8, '2025-11-01', '2025-12-31', 10, 'https://example.com/qrcodes/CINEROMANCE'),
+('MIERCOLES2X1', '2x1 en salas regulares, el miercoles', '2x1 en boletos de salas regulares, solo aplica los miércoles y no es válido en festivos.', 'boleto_2x1', 8, '2025-01-01', '2025-12-31', 50, 'https://bj-api.site/qrcodes/MIERCOLES2X1.png'),
+('CINE30SNACK', '30% en Palomitas y Refresco grandes', 'Aplica en combo palomitas y refresco grandes. No incluye upgrades.', 'Porcentaje', 8, '2025-10-01', '2026-03-31', 25, 'https://bj-api.site/qrcodes/CINE30SNACK.png'),
+('CINEROMANCE', 'Boleto + Hot-Dog por $100', 'Válido para funciones de lunes a viernes antes de las 5 PM.', 'Precio fijo', 8, '2025-11-01', '2025-12-31', 10, 'https://bj-api.site/qrcodes/CINEROMANCE.png'),
 
 -- Cupones OXXO (ID 6)
-('OXXO30HIELO', '30% de descuento en Hielo Fiesta', '30% de descuento en Hielo Fiesta, aplicable hasta 4 bolsas por cupón.', 'Porcentaje', 6, '2025-01-01', '2025-12-31', 4, 'https://example.com/qrcodes/OXXO30HIELO'),
-('COFFEEAM', 'Café Americano 12oz gratis', 'Válido solo de 6:00 AM a 10:00 AM. Un cupón por persona.', 'Regalo', 6, '2025-09-01', '2026-02-28', 1, 'https://example.com/qrcodes/COFFEEAM'),
-('PAPA2X1', '2x1 en Papas Sabritas', 'Válido en cualquier sabor de bolsa pequeña/mediana. El de menor precio es gratis.', 'Producto_2x1', 6, '2025-10-01', '2026-01-31', 10, 'https://example.com/qrcodes/PAPA2X1'),
+('OXXO30HIELO', '30% de descuento en Hielo Fiesta', '30% de descuento en Hielo Fiesta, aplicable hasta 4 bolsas por cupón.', 'Porcentaje', 6, '2025-01-01', '2025-12-31', 4, 'https://bj-api.site/qrcodes/OXXO30HIELO.png'),
+('COFFEEAM', 'Café Americano 12oz gratis', 'Válido solo de 6:00 AM a 10:00 AM. Un cupón por persona.', 'Regalo', 6, '2025-09-01', '2026-02-28', 1, 'https://bj-api.site/qrcodes/COFFEEAM.png'),
+('PAPA2X1', '2x1 en Papas Sabritas', 'Válido en cualquier sabor de bolsa pequeña/mediana. El de menor precio es gratis.', 'Producto_2x1', 6, '2025-10-01', '2026-01-31', 10, 'https://bj-api.site/qrcodes/PAPA2X1.png'),
 
 -- Cupones Six Flags (ID 7)
-('ADRENALINA40', '40% de descuento en Entrada General', 'No aplica en boletos Flash Pass. Válido solo de martes a jueves.', 'Porcentaje', 7, '2025-01-01', '2025-12-15', 3, 'https://example.com/qrcodes/ADRENALINA40'),
-('SIXCOMBOFAM', 'Combo Familiar (4 personas) por $1200', 'Incluye 4 entradas y un combo de alimentos.', 'Precio fijo', 7, '2025-11-01', '2026-03-01', 5, 'https://example.com/qrcodes/SIXCOMBOFAM'),
-('PASSGRATIS', 'Segundo Visitante GRATIS', 'Paga una entrada y la segunda es cortesía (de igual o menor valor).', 'boleto_2x1', 7, '2026-01-01', '2026-06-30', NULL, 'https://example.com/qrcodes/PASSGRATIS'),
+('ADRENALINA40', '40% de descuento en Entrada General', 'No aplica en boletos Flash Pass. Válido solo de martes a jueves.', 'Porcentaje', 7, '2025-01-01', '2025-12-15', 3, 'https://bj-api.site/qrcodes/ADRENALINA40'),
+('SIXCOMBOFAM', 'Combo Familiar (4 personas) por $1200', 'Incluye 4 entradas y un combo de alimentos.', 'Precio fijo', 7, '2025-11-01', '2026-03-01', 5, 'https://bj-api.site/qrcodes/SIXCOMBOFAM'),
+('PASSGRATIS', 'Segundo Visitante GRATIS', 'Paga una entrada y la segunda es cortesía (de igual o menor valor).', 'boleto_2x1', 7, '2026-01-01', '2026-06-30', NULL, 'https://bj-api.site/qrcodes/PASSGRATIS'),
 
 -- Cupones Soriana (ID 9)
-('DESPENSA10', '10% de descuento en Abarrotes', 'Mínimo de compra $500 pesos. No aplica en perecederos.', 'Porcentaje', 9, '2025-11-15', '2025-12-31', NULL, 'https://example.com/qrcodes/DESPENSA10'),
-('FRUTAYVERD', 'Envío Gratis en Tu Primer Compra', 'Solo aplica para compras en línea mayores a $800 en frutas y verduras.', 'Envio Gratis', 9, '2025-10-01', '2026-04-30', 1, 'https://example.com/qrcodes/FRUTAYVERD'),
-('ELECTRO200', '$200 de descuento en Electrónica', 'Válido en compras mayores a $2,000 en el departamento de electrónica.', 'Monto Fijo', 9, '2025-10-10', '2026-01-10', 5, 'https://example.com/qrcodes/ELECTRO200'),
+('DESPENSA10', '10% de descuento en Abarrotes', 'Mínimo de compra $500 pesos. No aplica en perecederos.', 'Porcentaje', 9, '2025-11-15', '2025-12-31', NULL, 'https://bj-api.site/qrcodes/DESPENSA10'),
+('FRUTAYVERD', 'Envío Gratis en Tu Primer Compra', 'Solo aplica para compras en línea mayores a $800 en frutas y verduras.', 'Envio Gratis', 9, '2025-10-01', '2026-04-30', 1, 'https://bj-api.site/qrcodes/FRUTAYVERD'),
+('ELECTRO200', '$200 de descuento en Electrónica', 'Válido en compras mayores a $2,000 en el departamento de electrónica.', 'Monto Fijo', 9, '2025-10-10', '2026-01-10', 5, 'https://bj-api.site/qrcodes/ELECTRO200'),
 
 -- Cupones Liverpool (ID 10)
-('MODA20NEW', '20% de descuento en Ropa de Temporada', 'Válido en marcas seleccionadas de ropa de mujer y hombre.', 'Porcentaje', 10, '2025-10-01', '2026-01-31', 2, 'https://example.com/qrcodes/MODA20NEW'),
-('PERFUMELVP', 'Set de muestras de Perfumes Gratis', 'Muestra exclusiva en la compra de cualquier fragancia.', 'Regalo', 10, '2025-01-01', '2026-12-31', 1, 'https://example.com/qrcodes/PERFUMELVP'),
-('12MSI', '12 Meses Sin Intereses Adicionales', 'Aplica para compras con tarjeta Liverpool mayores a $5,000.', 'Financiamiento', 10, '2025-12-01', '2026-02-28', NULL, 'https://example.com/qrcodes/12MSI'),
+('MODA20NEW', '20% de descuento en Ropa de Temporada', 'Válido en marcas seleccionadas de ropa de mujer y hombre.', 'Porcentaje', 10, '2025-10-01', '2026-01-31', 2, 'https://bj-api.site/qrcodes/MODA20NEW'),
+('PERFUMELVP', 'Set de muestras de Perfumes Gratis', 'Muestra exclusiva en la compra de cualquier fragancia.', 'Regalo', 10, '2025-01-01', '2026-12-31', 1, 'https://bj-api.site/qrcodes/PERFUMELVP'),
+('12MSI', '12 Meses Sin Intereses Adicionales', 'Aplica para compras con tarjeta Liverpool mayores a $5,000.', 'Financiamiento', 10, '2025-12-01', '2026-02-28', NULL, 'https://bj-api.site/qrcodes/12MSI'),
 
 -- Cupones Librerías Gandhi (ID 11)
-('LECTOR15', '15% de descuento en Libros', 'No aplica en textos escolares o revistas.', 'Porcentaje', 11, '2025-01-01', '2026-01-01', NULL, 'https://example.com/qrcodes/LECTOR15'),
-('CAFEGRATIS', 'Café Americano GRATIS', 'Solo aplica al presentar el cupón, sin compra mínima.', 'Regalo', 11, '2025-08-01', '2025-12-31', 1, 'https://example.com/qrcodes/CAFEGRATIS'),
-('NOVELA3X2', '3x2 en Novelas de Ficción', 'El libro de menor costo es gratis.', 'Producto_3x2', 11, '2025-11-01', '2026-02-29', 1, 'https://example.com/qrcodes/NOVELA3X2'),
+('LECTOR15', '15% de descuento en Libros', 'No aplica en textos escolares o revistas.', 'Porcentaje', 11, '2025-01-01', '2026-01-01', NULL, 'https://bj-api.site/qrcodes/LECTOR15'),
+('CAFEGRATIS', 'Café Americano GRATIS', 'Solo aplica al presentar el cupón, sin compra mínima.', 'Regalo', 11, '2025-08-01', '2025-12-31', 1, 'https://bj-api.site/qrcodes/CAFEGRATIS'),
+('NOVELA3X2', '3x2 en Novelas de Ficción', 'El libro de menor costo es gratis.', 'Producto_3x2', 11, '2025-11-01', '2026-02-29', 1, 'https://bj-api.site/qrcodes/NOVELA3X2'),
 
 -- Cupones Vips (ID 12)
-('VIPS_DESAYUNO', 'Desayuno Clásico por $99', 'Elige entre Hotcakes o Huevos al gusto. Incluye café.', 'Precio fijo', 12, '2025-01-01', '2026-06-30', 15, 'https://example.com/qrcodes/VIPS_DESAYUNO'),
-('LUNCH15', '15% de descuento en Comidas', 'Válido de 1:00 PM a 5:00 PM, de lunes a viernes.', 'Porcentaje', 12, '2025-11-01', '2026-01-31', 10, 'https://example.com/qrcodes/LUNCH15'),
-('PASTELPOSTRE', 'Postre GRATIS en la compra de un platillo fuerte', 'Válido en la rebanada de pastel de la semana.', 'Regalo', 12, '2025-10-01', '2026-01-01', 5, 'https://example.com/qrcodes/PASTELPOSTRE'),
+('VIPS_DESAYUNO', 'Desayuno Clásico por $99', 'Elige entre Hotcakes o Huevos al gusto. Incluye café.', 'Precio fijo', 12, '2025-01-01', '2026-06-30', 15, 'https://bj-api.site/qrcodes/VIPS_DESAYUNO'),
+('LUNCH15', '15% de descuento en Comidas', 'Válido de 1:00 PM a 5:00 PM, de lunes a viernes.', 'Porcentaje', 12, '2025-11-01', '2026-01-31', 10, 'https://bj-api.site/qrcodes/LUNCH15'),
+('PASTELPOSTRE', 'Postre GRATIS en la compra de un platillo fuerte', 'Válido en la rebanada de pastel de la semana.', 'Regalo', 12, '2025-10-01', '2026-01-01', 5, 'https://bj-api.site/qrcodes/PASTELPOSTRE'),
 
 -- Cupones Telcel (ID 13)
-('RECARGA50', '50% de Bonificación en tu Recarga', 'Recarga mínima de $100 pesos. Bonificación aplica a tiempo aire.', 'Porcentaje', 13, '2025-11-20', '2026-01-20', 1, 'https://example.com/qrcodes/RECARGA50'),
-('CHIPGRATIS', 'Chip Telcel con $50 de saldo GRATIS', 'Solo para nuevos clientes.', 'Regalo', 13, '2025-10-01', '2026-03-31', 1, 'https://example.com/qrcodes/CHIPGRATIS'),
-('PLAN_ESTUDIANTE', '2 Meses Gratis en Plan Postpago', 'Contrata un plan de 18 meses y recibe 2 meses de servicio gratis.', 'Meses Gratis', 13, '2025-01-01', '2026-12-31', NULL, 'https://example.com/qrcodes/PLAN_ESTUDIANTE'),
+('RECARGA50', '50% de Bonificación en tu Recarga', 'Recarga mínima de $100 pesos. Bonificación aplica a tiempo aire.', 'Porcentaje', 13, '2025-11-20', '2026-01-20', 1, 'https://bj-api.site/qrcodes/RECARGA50'),
+('CHIPGRATIS', 'Chip Telcel con $50 de saldo GRATIS', 'Solo para nuevos clientes.', 'Regalo', 13, '2025-10-01', '2026-03-31', 1, 'https://bj-api.site/qrcodes/CHIPGRATIS'),
+('PLAN_ESTUDIANTE', '2 Meses Gratis en Plan Postpago', 'Contrata un plan de 18 meses y recibe 2 meses de servicio gratis.', 'Meses Gratis', 13, '2025-01-01', '2026-12-31', NULL, 'https://bj-api.site/qrcodes/PLAN_ESTUDIANTE'),
 
 -- Cupones Innovasport (ID 14)
-('SNEAKER10', '10% de descuento en Tenis Nuevos', 'Válido en la colección de la semana.', 'Porcentaje', 14, '2025-10-01', '2026-02-29', 3, 'https://example.com/qrcodes/SNEAKER10'),
-('ENVIOFREE', 'Envío Estándar GRATIS', 'Sin monto mínimo de compra en línea.', 'Envio Gratis', 14, '2025-10-01', '2025-12-31', 5, 'https://example.com/qrcodes/ENVIOFREE'),
-('INNOVA500', '$500 de Regalo en tu Compra', 'Mínimo de compra $2,500. Aplica en toda la tienda.', 'Monto Fijo', 14, '2025-12-01', '2026-01-15', 1, 'https://example.com/qrcodes/INNOVA500'),
+('SNEAKER10', '10% de descuento en Tenis Nuevos', 'Válido en la colección de la semana.', 'Porcentaje', 14, '2025-10-01', '2026-02-29', 3, 'https://bj-api.site/qrcodes/SNEAKER10'),
+('ENVIOFREE', 'Envío Estándar GRATIS', 'Sin monto mínimo de compra en línea.', 'Envio Gratis', 14, '2025-10-01', '2025-12-31', 5, 'https://bj-api.site/qrcodes/ENVIOFREE'),
+('INNOVA500', '$500 de Regalo en tu Compra', 'Mínimo de compra $2,500. Aplica en toda la tienda.', 'Monto Fijo', 14, '2025-12-01', '2026-01-15', 1, 'https://bj-api.site/qrcodes/INNOVA500'),
 
 -- Cupones El Palacio de Hierro (ID 15)
-('JOYAS15', '15% de descuento en Joyería', 'Aplica en marcas seleccionadas.', 'Porcentaje', 15, '2025-11-01', '2026-01-31', NULL, 'https://example.com/qrcodes/JOYAS15'),
-('PRIMERACOMPRA', '10% Adicional en tu Primera Compra', 'Solo para clientes nuevos.', 'Porcentaje', 15, '2025-01-01', '2026-12-31', 1, 'https://example.com/qrcodes/PRIMERACOMPRA'),
-('BEAUTYSET', 'Set de Muestras de Belleza', 'Gratis al visitar el mostrador de perfumería.', 'Regalo', 15, '2025-10-10', '2026-03-10', NULL, 'https://example.com/qrcodes/BEAUTYSET');
+('JOYAS15', '15% de descuento en Joyería', 'Aplica en marcas seleccionadas.', 'Porcentaje', 15, '2025-11-01', '2026-01-31', NULL, 'https://bj-api.site/qrcodes/JOYAS15'),
+('PRIMERACOMPRA', '10% Adicional en tu Primera Compra', 'Solo para clientes nuevos.', 'Porcentaje', 15, '2025-01-01', '2026-12-31', 1, 'https://bj-api.site/qrcodes/PRIMERACOMPRA'),
+('BEAUTYSET', 'Set de Muestras de Belleza', 'Gratis al visitar el mostrador de perfumería.', 'Regalo', 15, '2025-10-10', '2026-03-10', NULL, 'https://bj-api.site/qrcodes/BEAUTYSET');
 
 
 -- =========================================================
@@ -212,16 +220,13 @@ INSERT INTO user_coupons (user_id, coupon_id, obtained_at) VALUES
 -- =========================================================
 
 INSERT INTO coupon_redemptions (user_id, coupon_id, redeemed_at) VALUES
--- Isaac (16) redime 3
+
 (16, 1, '2025-11-06 10:30:00'),
 (16, 4, '2025-11-10 11:30:00'),
 (16, 13, '2025-11-20 12:30:00'),
-
--- Astrid (17) redime 2
 (17, 1, '2025-11-06 11:00:00'),
 (17, 19, '2025-11-15 17:00:00'),
 
--- Redenciones del resto de usuarios
 (18, 2, '2025-11-05 17:30:00'),
 (18, 5, '2025-11-10 18:30:00'),
 (19, 3, '2025-11-08 09:30:00'),
