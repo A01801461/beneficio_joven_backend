@@ -78,16 +78,16 @@ INSERT INTO admin_profiles (user_id, full_name, is_super_admin) VALUES
 -- =========================================================
 
 INSERT INTO merchant_profiles (user_id, merchant_name, description, logo_url, merchant_type) VALUES
-(6, 'OXXO', 'Tienda de conveniencia con más de 21,000 sucursales en México. Paga servicios, recarga tu celular y más.', 'https://es.wikipedia.org/wiki/Oxxo#/media/Archivo:Oxxo_Logo.svg', 'Conveniencia'),
-(7, 'Six Flags México', 'Parque de diversiones más grande de Latinoamérica. Montañas rusas, shows y experiencias únicas.', 'https://en.wikipedia.org/wiki/Six_Flags#/media/File:Six_Flags_logo.svg', 'Entretenimiento'),
-(8, 'Cinépolis', 'La Capital del Cine. Funciones premium, butacas reclinables y snacks exclusivos.', 'https://es.wikipedia.org/wiki/Cin%C3%A9polis#/media/Archivo:Cin%C3%A9polis.svg', 'Entretenimiento'),
-(9, 'Soriana', 'Supermercado y tienda departamental con precios bajos todos los días. Más de 800 tiendas en México.', 'https://es.wikipedia.org/wiki/Organizaci%C3%B3n_Soriana#/media/Archivo:LogoSorianaSVG.svg', 'Supermercado'),
-(10, 'Liverpool', 'Tienda departamental con moda, electrónicos, hogar y más. Calidad y servicio desde 1847.', 'https://en.wikipedia.org/wiki/Liverpool_(department_store)#/media/File:Liverpool_logo_2023.png', 'Departamental'),
-(11, 'Librerías Gandhi', 'El lugar de tus libros. Gran variedad de títulos, cafetería y ambiente cultural.', 'https://en.wikipedia.org/wiki/Gandhi_(bookstore)#/media/File:Librer%C3%ADas_Gandhi_logo.png', 'Librería'),
-(12, 'Vips', 'Restaurante familiar mexicano con desayunos, comidas y cenas. Un clásico de la gastronomía nacional.', 'https://es.wikipedia.org/wiki/Vips#/media/Archivo:VIPS_Logo_Mexico_01.2024.svg', 'Restaurante'),
-(13, 'Telcel', 'Líder en telecomunicaciones móviles en México. Planes y equipos de última generación.', 'https://es.wikipedia.org/wiki/Telcel#/media/Archivo:Telcel_logo.svg', 'Telecomunicaciones'),
-(14, 'Innovasport', 'Tu tienda de deportes. Ropa, calzado y accesorios de las mejores marcas para atletas.', 'https://kajabi-storefronts-production.kajabi-cdn.com/kajabi-storefronts-production/file-uploads/themes/2148572078/settings_images/715a2-400-ac48-3dbc-5d2ee4b0d14_logo-INNOVA.png', 'Deportes'),
-(15, 'El Palacio de Hierro', 'Soy Totalmente Palacio. Tienda departamental de lujo con las mejores marcas internacionales.', 'https://es.wikipedia.org/wiki/El_Palacio_de_Hierro#/media/Archivo:El_Palacio_de_Hierro_logo.svg', 'Departamental');
+(6, 'OXXO', 'Tienda de conveniencia con más de 21,000 sucursales en México. Paga servicios, recarga tu celular y más.', 'https://bj-api.site/merchantLogo/OXXO.png', 'Conveniencia'),
+(7, 'Six Flags México', 'Parque de diversiones más grande de Latinoamérica. Montañas rusas, shows y experiencias únicas.', 'https://bj-api.site/merchantLogo/SixFlags.png', 'Entretenimiento'),
+(8, 'Cinépolis', 'La Capital del Cine. Funciones premium, butacas reclinables y snacks exclusivos.', 'https://bj-api.site/merchantLogo/Cinepolis.png', 'Entretenimiento'),
+(9, 'Soriana', 'Supermercado y tienda departamental con precios bajos todos los días. Más de 800 tiendas en México.', 'https://bj-api.site/merchantLogo/Soriana.png', 'Supermercado'),
+(10, 'Liverpool', 'Tienda departamental con moda, electrónicos, hogar y más. Calidad y servicio desde 1847.', 'https://bj-api.site/merchantLogo/Liverpool.png', 'Departamental'),
+(11, 'Librerías Gandhi', 'El lugar de tus libros. Gran variedad de títulos, cafetería y ambiente cultural.', 'https://bj-api.site/merchantLogo/Ghandi.png', 'Librería'),
+(12, 'Vips', 'Restaurante familiar mexicano con desayunos, comidas y cenas. Un clásico de la gastronomía nacional.', 'https://bj-api.site/merchantLogo/Vips.png', 'Restaurante'),
+(13, 'Telcel', 'Líder en telecomunicaciones móviles en México. Planes y equipos de última generación.', 'https://bj-api.site/merchantLogo/Telcel.png', 'Telecomunicaciones'),
+(14, 'Innovasport', 'Tu tienda de deportes. Ropa, calzado y accesorios de las mejores marcas para atletas.', 'https://bj-api.site/merchantLogo/Innovasport.png', 'Deportes'),
+(15, 'El Palacio de Hierro', 'Soy Totalmente Palacio. Tienda departamental de lujo con las mejores marcas internacionales.', 'https://bj-api.site/merchantLogo/PalacioHierro.png', 'Departamental');
 
 
 -- =========================================================
