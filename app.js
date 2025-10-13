@@ -41,6 +41,7 @@ app.use('/beneficioJoven/auth', authRoutes);
 app.use('/beneficioJoven', userRoutes);
 app.use('/beneficioJoven', couponRoutes);
 app.use('/qrcodes', express.static(path.join(__dirname, 'qrcodes')));
+app.use('/merchantLogo', express.static(path.join(__dirname, 'merchantLogo')));
 
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';  // Escucha en todas las interfaces para acceso en red
