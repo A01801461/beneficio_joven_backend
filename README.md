@@ -1,4 +1,4 @@
-# 📱 Beneficio Joven – Repo 3: Servidor Backend
+=# 📱 Beneficio Joven – Repo 3: Servidor Backend
 
 Este repositorio contiene el servidor backend del sistema de cupones para el programa **Beneficio Joven** del Gobierno Municipal de Atizapán de Zaragoza.  
 El backend es el núcleo de la lógica de negocio, gestionando la conexión a la base de datos, autenticación de usuarios, creación y redención de cupones, y la interacción con la aplicación móvil y el panel de administración.
@@ -37,7 +37,7 @@ El proyecto busca impulsar la participación juvenil y facilitar el acceso a ben
 
 ## 🚀 Detalles del Backend
 
-El backend está construido con **Node.js** y **Express.js**, utilizando una base de datos **MySQL** para almacenar información sobre usuarios, comercios, cupones, redenciones, etc. Está diseñado con buenas prácticas para ser escalable, seguro y fácil de migrar a entornos como **AWS** (usando RDS para la base de datos y EC2), o un **VPS** de cualquier otro proveedor, como donde esta alojado actualmente en https://bj-api.site .
+El backend está construido con **Node.js** y **Express.js**, utilizando una base de datos **MySQL** para almacenar información sobre usuarios, comercios, cupones, redenciones, etc. Está diseñado con buenas prácticas para ser escalable, seguro y fácil de migrar a entornos como **AWS**, o un **VPS** de cualquier otro proveedor, como donde esta alojado actualmente en https://bj-api.site .
 
 ### **Características principales**
 - **Autenticación segura**: Usa JSON Web Tokens (JWT) para autenticar usuarios y proteger endpoints sensibles. Soporta roles (`user`, `merchant`, `admin`, `super_admin`) con permisos diferenciados.
@@ -45,7 +45,7 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
 - **Gestión de cupones**: Creación, listado y redención.
 - **Base de datos optimizada**: Tablas con índices y claves foráneas para garantizar rendimiento y consistencia (e.g., `users`, `coupons`, `user_coupons`).
 - **Acceso en red local**: Configurado para ser provado localmente facilmente con XAMMP.
-- **Preparado para AWS**: Estructurado para migrar fácilmente a un VPS u otro entorno.
+- **Preparado para deploy**: Estructurado para migrar fácilmente a un VPS u otro entorno.
 
 ### **Endpoints principales**
 | Método | Endpoint                  | Descripción                              |
