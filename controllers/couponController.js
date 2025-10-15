@@ -50,6 +50,30 @@ exports.createCoupon = async (req, res) => {
   console.log('📥 Request body recibido:', { code, merchant_id }); // mensaje de control de inicio de proceso
 
   try {
+    // Verificar que merchant_id existe en users y tiene rol 'merchant'
+    const [userRows] = await db.query(
+      'SELECT id, role FROM users WHERE id = ?',
+      [merchant_id]
+    );
+    
+    if (userRows.length === 0) {
+      return res.status(400).json({ error: 'merchant_id no encontrado en la base de datos' });
+    }
+    
+    if (userRows[0].role !== 'merchant') {
+      return res.status(400).json({ error: 'El comercio con el merchant_id proporcionado no existe' });
+    }
+
+    // Verificar que el código del cupón sea único
+    const [existingCoupon] = await db.query(
+      'SELECT id FROM coupons WHERE code = ?',
+      [code]
+    );
+    
+    if (existingCoupon.length > 0) {
+      return res.status(400).json({ error: 'El código del cupón ya existe' });
+    }
+
     // llamando generador de QRs con info 'code'
     const generatedQrPath = await generateQR(code);
 
@@ -61,6 +85,7 @@ exports.createCoupon = async (req, res) => {
       'INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid_until, usage_limit, qr_code_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [code, title, description, discount_type, merchant_id, valid_until, usage_limit, fullQrUrl]
     );
+    
     // Mensajes de control
     res.status(201).json({ message: 'Cupón creado', couponId: result.insertId, qrUrl: fullQrUrl });
   } catch (err) {
