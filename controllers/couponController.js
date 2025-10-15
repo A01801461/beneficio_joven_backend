@@ -306,10 +306,22 @@ exports.deleteCoupon = async (req, res) => {
 
     // Eliminar el archivo QR si existe
     if (coupon[0].qr_code_url) {
-      const qrPath = path.join(__dirname, '..', coupon[0].qr_code_url.replace('/qrcodes/', 'qrcodes/')); // Ajustar path relativo
+      // Extraer el nombre del archivo QR desde la URL (por ejemplo, 'couponCode.png')
+      const qrFilename = path.basename(coupon[0].qr_code_url);
+      // Construir el path relativo para la carpeta qrcodes
+      const qrPath = path.join(__dirname, '..', 'qrcodes', qrFilename);
+      
+      // Verificar si el archivo existe y eliminarlo
       if (fs.existsSync(qrPath)) {
-        fs.unlinkSync(qrPath);
-        console.log('✅ QR eliminado exitosamente');
+        try {
+          fs.unlinkSync(qrPath);
+          console.log('✅ QR eliminado exitosamente:', qrPath);
+        } catch (unlinkErr) {
+          console.error('⚠️ Error al eliminar QR:', unlinkErr);
+          // No detenemos el proceso, pero registramos el error
+        }
+      } else {
+        console.warn('⚠️ Archivo QR no encontrado:', qrPath);
       }
     }
 
