@@ -66,6 +66,8 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
 | GET    | `/beneficioJoven/users/:id/coupons`    | Lista cupones por usuario     |
 | POST   | `/beneficioJoven/validar/:code`     | Validar existencia de un cupón   |
 | POST   | `/beneficioJoven/coupons/redeem`     | Canjea un cupón                 |
+| POST   | `/beneficioJoven/coupons/like`       | likear/Dislikear un cupón (Toggle)  |
+| DELETE | `/beneficioJoven/coupons/:id`        | borra un cupón                  |
 
 ### **Cómo probar el backend localmente **
 
