@@ -166,22 +166,22 @@ exports.getUserCoupons = async (req, res) => {
   try {
     // Query para listar cupones de x joven
     const [userCoupons] = await db.query(`
-      SELECT 
-        c.id,
-        c.code,
-        c.title,
-        c.description,
-        c.discount_type,
-        DATE_FORMAT(c.valid_until, "%Y-%m-%d") AS valid_until,
-        c.merchant_id,
-        c.qr_code_url,
-        uc.user_id,
-        mp.logo_url AS merchant_logo,
-        mp.merchant_type,
-        mp.merchant_name
-    FROM coupons c
-    INNER JOIN merchant_profiles mp ON c.merchant_id = mp.user_id
-    WHERE c.code = ?;
+      SELECT
+          c.id AS coupon_id,
+          c.code,
+          c.title,
+          c.description,
+          c.discount_type,
+          DATE_FORMAT(c.valid_until, "%Y-%m-%d") AS valid_until,
+          c.merchant_id,
+          c.qr_code_url,
+          m.logo_url AS merchant_logo,
+          m.merchant_type,
+          m.merchant_name
+      FROM user_coupons uc
+      JOIN coupons c ON uc.coupon_id = c.id
+      JOIN merchant_profiles m ON c.merchant_id = m.user_id
+      WHERE uc.user_id = ?;
     `, [userId]);
     res.json(userCoupons);
   } catch (err) {
@@ -249,6 +249,76 @@ exports.redeemCoupon = async (req, res) => {
 
     res.json({ message: 'Cupón canjeado' });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// -----
+// Controlador (funcion) para likear/deslikear un cupón (toggle)
+exports.likeCoupon = async (req, res) => {
+  const { couponId } = req.body; // Asumiendo que el ID del cupón viene en el body
+
+  try {
+    // Verificar si el cupón existe
+    const [coupon] = await db.query('SELECT * FROM coupons WHERE id = ?', [couponId]);
+    if (coupon.length === 0) {
+      return res.status(404).json({ error: 'Cupón no encontrado' });
+    }
+
+    // Verificar si ya está asignado
+    const [existing] = await db.query('SELECT * FROM user_coupons WHERE user_id = ? AND coupon_id = ?', [userId, couponId]);
+
+    if (existing.length === 0) {
+      // No existe: likear (asignar)
+      const [result] = await db.query(
+        'INSERT INTO user_coupons (user_id, coupon_id) VALUES (?, ?)',
+        [userId, couponId]
+      );
+      res.status(201).json({ message: 'Cupón likeado exitosamente', assignmentId: result.insertId });
+    } else {
+      // Existe: deslikear (desasignar)
+      await db.query('DELETE FROM user_coupons WHERE user_id = ? AND coupon_id = ?', [userId, couponId]);
+      res.status(200).json({ message: 'Cupón deslikeado exitosamente' });
+    }
+  } catch (err) {
+    console.error('💥 Error en likeCoupon:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// -----
+// Controlador (funcion) para borrar un cupón
+exports.deleteCoupon = async (req, res) => {
+  const { couponId } = req.params; // Asumiendo que el ID del cupón viene como parámetro en la URL (e.g., /coupons/:couponId)
+
+  try {
+    // Verificar si el cupón existe y pertenece al merchant (si no es admin)
+    const [coupon] = await db.query('SELECT * FROM coupons WHERE id = ?', [couponId]);
+    if (coupon.length === 0) {
+      return res.status(404).json({ error: 'Cupón no encontrado' });
+    }
+
+    // Eliminar registros relacionados en user_coupons
+    await db.query('DELETE FROM user_coupons WHERE coupon_id = ?', [couponId]);
+
+    // Eliminar registros relacionados en coupon_redemptions
+    await db.query('DELETE FROM coupon_redemptions WHERE coupon_id = ?', [couponId]);
+
+    // Eliminar el archivo QR si existe
+    if (coupon[0].qr_code_url) {
+      const qrPath = path.join(__dirname, '..', coupon[0].qr_code_url.replace('/qrcodes/', 'qrcodes/')); // Ajustar path relativo
+      if (fs.existsSync(qrPath)) {
+        fs.unlinkSync(qrPath);
+        console.log('✅ QR eliminado exitosamente');
+      }
+    }
+
+    // Eliminar el cupón de la base de datos
+    await db.query('DELETE FROM coupons WHERE id = ?', [couponId]);
+
+    res.status(200).json({ message: 'Cupón borrado exitosamente' });
+  } catch (err) {
+    console.error('💥 Error en deleteCoupon:', err);
     res.status(500).json({ error: err.message });
   }
 };

@@ -57,8 +57,8 @@
       <div class="bg-white p-6 rounded-lg shadow mb-6">
         <h3 class="text-lg font-semibold mb-2" style="margin-top: 20px;">Cupones</h3>
         <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/coupons">Todos los Cupones</a></button>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/coupons/merchant/3">Cupones por vendedor</a></button>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/users/1/coupons">Cupones asignados a Joven</a></button>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/coupons/merchant/7">Cupones por vendedor</a></button>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><a href="http://localhost:3000/beneficioJoven/users/16/coupons">Cupones asignados a Joven</a></button>
       </div>
       <!-- Listar usuarios -->
       <div class="bg-white p-6 rounded-lg shadow mb-6">
@@ -107,6 +107,22 @@ curl -X POST http://localhost:3000/beneficioJoven/coupons
   -H "Content-Type: application/json"
   -H "Authorization: Bearer <token>"
   -d '{"code":"PROMO20","title":"20% off","description":"Válido en tiendas","discount_type":"Porcentaje","valid_until":"2025-12-31","merchant_id":3 ,"usage_limit":50}'
+          </pre>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="text-lg font-semibold">DELETE /beneficioJoven/coupons/:id</h3>
+          <p class="text-gray-600">Borrar un cupón.</p>
+          <pre>
+curl -X DELETE http://localhost:3000/beneficioJoven/coupons/1
+          </pre>
+        </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="text-lg font-semibold">POST /beneficioJoven/coupons/like</h3>
+          <p class="text-gray-600">Likear o Dislikear cupón (Toggle).</p>
+          <pre>
+curl -X POST http://localhost:3000/beneficioJoven/coupons/like \
+  -H "Content-Type: application/json" \
+  -d '{"couponId": 1}'
           </pre>
         </div>
       </div>
