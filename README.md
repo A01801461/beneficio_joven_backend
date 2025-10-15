@@ -58,6 +58,7 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
 | GET    | `/beneficioJoven/allusers`           | Lista todos los usuarios   |
 | GET    | `/beneficioJoven/jovenes`            | Lista los jovenes    |
 | GET    | `/beneficioJoven/merchants`          | Lista los comercios  |
+| GET    | `/beneficioJoven/merchants/:merchantType` | Lista los comercios por su tipo |
 | GET    | `/beneficioJoven/admins`             | Lista los admins     |
 | POST   | `/beneficioJoven/coupons`            | Crea un nuevo cupón           |
 | GET    | `/beneficioJoven/coupons`            | Lista cupones válidos         |

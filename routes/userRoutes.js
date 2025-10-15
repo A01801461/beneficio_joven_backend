@@ -24,5 +24,6 @@ router.get('/allusers', userController.listUsers); // listar todos los usuario (
 router.get('/merchants', userController.listMerchants); // listar comercios (sin seguridad)
 router.get('/admins', userController.listAdmins); // listar admins (sin seguridad)
 router.get('/jovenes', userController.listJovenes); // listar jovenes (sin seguridad)
+router.get('/merchants/:merchantType', userController.listByMerchantType); // listar cupones de x comercio (sin seguridad)
 
 module.exports = router;

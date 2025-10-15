@@ -64,3 +64,19 @@ exports.listJovenes = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// -----
+// Controlador (funcion) para listar comercios por su tipo
+exports.listByMerchantType = async (req, res) => {
+  // recibe id del comercio
+  const { merchantType } = req.params;
+  try {
+  // Query para listar cupones de x comercio
+    const [users] = await db.query(`
+      SELECT * FROM merchant_profiles
+      WHERE merchant_type = ?;`,
+      [merchantType]);
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
