@@ -20,10 +20,11 @@ router.post('/users', verifyToken, checkRole(['admin', 'super_admin']), userCont
 
 // GET
 router.get('/users', verifyToken, checkRole(['admin', 'super_admin']), userController.listUsers); // verificar token (con seguridad)
-router.get('/allusers', userController.listUsers); // listar todos los usuario (sin seguridad)
-router.get('/merchants', userController.listMerchants); // listar comercios (sin seguridad)
-router.get('/admins', userController.listAdmins); // listar admins (sin seguridad)
-router.get('/jovenes', userController.listJovenes); // listar jovenes (sin seguridad)
-router.get('/merchants/:merchantType', userController.listByMerchantType); // listar cupones de x comercio (sin seguridad)
+router.get('/allusers', userController.listUsers); // listar todos los usuario
+router.get('/merchants', userController.listMerchants); // listar comercios
+router.get('/admins', userController.listAdmins); // listar admins
+router.get('/jovenes', userController.listJovenes); // listar jovenes
+router.get('/merchants/:merchantType', userController.listByMerchantType); // listar comercios de x tipo
+router.get('/joven/:id', userController.datosJoven); // info de x joven
 
 module.exports = router;

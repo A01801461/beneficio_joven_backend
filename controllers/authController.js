@@ -80,13 +80,20 @@ exports.login = async (req, res) => {
   // buscar credenciales en BD
   try {
     const [[user]] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ error: 'Credenciales inválidas' }); // ERROR: no se encuentran las credenciales
+    
+    // Verificar si el email existe
+    if (!user) {
+      return res.status(404).json({ error: 'no existe un cuenta asociada al Email' });
     }
 
-    // Si se encuentran se otorga un token que dura una hora
+    // Verificar si el password es válido
+    if (!(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ error: 'Contraseña inválida' });
+    }
+
+    // Si las credenciales son correctas, se otorga un token que dura una hora
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token, role: user.role });
+    res.json({ token, role: user.role, id: user.id });
   } catch (err) {
     res.status(500).json({ error: err.message }); // Si se genera algun error del server
   }

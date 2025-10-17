@@ -20,6 +20,7 @@ exports.createUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// -----
 
 // Controlador (funcion) para listar usuarios
 exports.listUsers = async (req, res) => {
@@ -31,6 +32,7 @@ exports.listUsers = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// -----
 
 // Controlador (funcion) para listar comercios
 exports.listMerchants = async (req, res) => {
@@ -42,6 +44,7 @@ exports.listMerchants = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// -----
 
 // Controlador (funcion) para listar comercios
 exports.listAdmins = async (req, res) => {
@@ -53,6 +56,7 @@ exports.listAdmins = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// -----
 
 // Controlador (funcion) para listar comercios
 exports.listJovenes = async (req, res) => {
@@ -65,6 +69,7 @@ exports.listJovenes = async (req, res) => {
   }
 };
 // -----
+
 // Controlador (funcion) para listar comercios por su tipo
 exports.listByMerchantType = async (req, res) => {
   // recibe id del comercio
@@ -78,5 +83,37 @@ exports.listByMerchantType = async (req, res) => {
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+// -----
+// Controlador (funcion) para mostrar datos de x joven
+exports.datosJoven = async (req, res) => {
+  console.log('Route /joven/:id hit with ID:', req.params.id);  // Add this line
+  const { id } = req.params; // recibe 'id' de un joven para obtener su info
+  // Validación básica
+  if (!id) {
+    return res.status(400).json({ error: 'No se adjuntó un código' });
+  }
+
+  try {
+    // Query para ver si el usuario con 'id' existe
+    const [results] = await db.query(`
+      SELECT u.email, up.full_name, up.curp, up.birth_date, up.municipality
+        FROM user_profiles up
+        JOIN users u ON up.user_id = u.id
+        WHERE up.user_id = ?;
+    `, [id]);
+
+    // Verificar si se encontró el usuario
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const userData = results[0];
+    res.json(userData);
+
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Error interno del servidor o el usuario no es un joven' });
   }
 };
