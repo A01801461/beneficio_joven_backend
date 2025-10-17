@@ -88,7 +88,6 @@ exports.listByMerchantType = async (req, res) => {
 // -----
 // Controlador (funcion) para mostrar datos de x joven
 exports.datosJoven = async (req, res) => {
-  console.log('Route /joven/:id hit with ID:', req.params.id);  // Add this line
   const { id } = req.params; // recibe 'id' de un joven para obtener su info
   // Validación básica
   if (!id) {
@@ -98,10 +97,15 @@ exports.datosJoven = async (req, res) => {
   try {
     // Query para ver si el usuario con 'id' existe
     const [results] = await db.query(`
-      SELECT u.email, up.full_name, up.curp, up.birth_date, up.municipality
-        FROM user_profiles up
-        JOIN users u ON up.user_id = u.id
-        WHERE up.user_id = ?;
+      SELECT
+        u.email,
+        up.full_name,
+        up.curp,
+        DATE_FORMAT(up.birth_date, "%Y-%m-%d") AS valid_from,
+        up.municipality
+      FROM user_profiles up
+      JOIN users u ON up.user_id = u.id
+      WHERE up.user_id = ?;
     `, [id]);
 
     // Verificar si se encontró el usuario
