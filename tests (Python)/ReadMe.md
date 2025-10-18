@@ -15,7 +15,7 @@ funcionen según lo esperado.
 
 ## 🧪 Descripción de las Pruebas
 
-Utilizamos el framework **unittest de Python** para estructurar las pruebas de integración. Cada método test_* representa un caso de prueba aislado. Esto asegura que el API funcione correctamente y maneje errores como se espera, facilitando el mantenimiento y la detección temprana de fallos.
+Utilizamos el framework **unittest de Python** para estructurar las pruebas unitarias al API. Cada método test_* representa un caso de prueba aislado. Esto asegura que el API funcione correctamente y maneje errores como se espera, facilitando el mantenimiento y la detección temprana de fallos.
 
 ---
 
