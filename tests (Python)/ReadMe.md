@@ -8,7 +8,6 @@ Este documento describe las pruebas automatizadas realizadas para verificar el c
 Verificar que los procesos críticos de la API, como:
 - Registro e inicio de sesión de usuarios
 - Manejo de errores
-- Accesibilidad de endpoints públicos  
 
 funcionen según lo esperado.
 
