@@ -35,19 +35,23 @@ const loginSchema = Joi.object({
 exports.register = async (req, res) => {
   const { error } = registerSchema.validate(req.body); // ERROR: no coincide con el esquema de registro
   if (error) return res.status(400).json({ error: error.details[0].message });
-
   // parametros de la funcion
   const { email, password, role, profileData } = req.body;
-
   try {
     // Checa si email existe en la BD
     const [[existingUser]] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
     if (existingUser) return res.status(409).json({ error: 'Email ya registrado' });
 
+    // Checa si CURP existe en la BD (solo para rol 'user')
+    if (role === 'user') {
+      const { curp } = profileData;
+      const [[existingCurp]] = await db.query('SELECT user_id FROM user_profiles WHERE curp = ?', [curp]);
+      if (existingCurp) return res.status(409).json({ error: 'CURP ya registrado' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10); // encriptamos password
     const [result] = await db.query('INSERT INTO users (email, password, role) VALUES (?, ?, ?)', [email, hashedPassword, role]); // insert a tabla general de users
     const userId = result.insertId;
-
     // Insertar resto de datos del perfil según rol
     if (role === 'user') { // si es Joven
       const { full_name, curp, birth_date, municipality } = profileData;
@@ -61,13 +65,11 @@ exports.register = async (req, res) => {
     } else {
       return res.status(400).json({ error: 'Rol inválido' });
     }
-
     res.status(201).json({ message: 'Usuario registrado', userId });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 // -----
 // controlador (funcion) de Login
 exports.login = async (req, res) => {
