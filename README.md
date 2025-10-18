@@ -1,4 +1,4 @@
-=# 📱 Beneficio Joven – Repo 3: Servidor Backend
+# 📱 Beneficio Joven – Repo 3: Servidor Backend
 
 Este repositorio contiene el servidor backend del sistema de cupones para el programa **Beneficio Joven** del Gobierno Municipal de Atizapán de Zaragoza.  
 El backend es el núcleo de la lógica de negocio, gestionando la conexión a la base de datos, autenticación de usuarios, creación y redención de cupones, y la interacción con la aplicación móvil y el panel de administración.
