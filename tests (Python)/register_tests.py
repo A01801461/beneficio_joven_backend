@@ -1,3 +1,22 @@
+'''
+-------------------------------------------
+ register_tests.py
+
+ pruebas unitarias para endpoint de register,
+ utilizando el framework unittest de Python.
+
+ 5 casos de prueba:
+    1. Registro fallido por email duplicado.
+    2. Registro fallido por CURP duplicado.
+    3. Registro exitoso para nuevo usuario (Ana Sofía).
+    4. Registro exitoso para nuevo comercio ficticio.
+    5. Registro exitoso para nuevo admin.
+
+ Fecha: 18-Oct-2025
+ Autores: Equipo 2 - Gpo 401
+---------------------------------------------
+'''
+
 import unittest
 import requests
 import time

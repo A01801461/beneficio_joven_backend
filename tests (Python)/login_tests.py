@@ -1,3 +1,20 @@
+'''
+-------------------------------------------
+ login_tests.py
+
+ pruebas unitarias para endpoint de login,
+ utilizando el framework unittest de Python.
+
+ 3 casos de prueba:
+    1. Login exitoso (credenciales correctas).
+    2. Cuenta inexistente (email incorrecto).
+    3. Password incorrecto.
+
+ Fecha: 18-Oct-2025
+ Autores: Equipo 2 - Gpo 401
+---------------------------------------------
+'''
+
 import unittest
 import requests
 import json
