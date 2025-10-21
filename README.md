@@ -116,12 +116,6 @@ Aunque no todas estén activas, el backend **ya incluye la lógica completa** pa
 - Validación de datos y sanitización de entrada (Uso de **Joi** y middleware de validación para evitar inyecciones SQL y datos corruptos.) 
 - Buenas prácticas de CORS y variables de entorno (Configuración segura mediante `.env`)
 
-### ⚠️ Estado actual (versión de pruebas)
-
-- Los endpoints en `https://bj-api.site` y el código del repositorio **usan datos ficticios** para proteger la información real.  
-- La **verificación de tokens y roles** está desactivada temporalmente en la mayoría de rutas para facilitar la integración y pruebas con los clientes móviles y web.  
-- En entornos de producción o cuando se migre a infraestructura oficial, **la capa de seguridad se puede reactivar muy fácilmente** habilitando el middleware `auth.js` en las rutas correspondientes.
-
 ---
 
 ## 📄 Licencia
