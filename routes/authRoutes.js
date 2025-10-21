@@ -17,4 +17,8 @@ const router = express.Router();
 router.post('/register', authController.register); // ruta para registro
 router.post('/login', authController.login); // ruta para login
 
+// Nuevas rutas para recuperación de contraseña
+router.post('/request-password-reset', authController.requestPasswordReset);
+router.post('/reset-password', authController.resetPassword);
+
 module.exports = router;

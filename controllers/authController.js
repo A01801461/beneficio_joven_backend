@@ -15,6 +15,8 @@ const db = require('../config/db'); // importando archivo de configuracion de co
 const bcrypt = require('bcryptjs'); // importando bycrypt (node module de encripcion)
 const jwt = require('jsonwebtoken'); // importando jsonwebtoken (node module para manejo de tokens y sesiones)
 const Joi = require('joi'); // importando joi (node module para esquemas de formularios)
+const emailService = require('../utils/emailService'); // importando servicio de email
+const crypto = require('crypto'); // importando crypto (node module para generar tokens seguros)
 
 // esquema de registro
 const registerSchema = Joi.object({
@@ -28,6 +30,16 @@ const registerSchema = Joi.object({
 const loginSchema = Joi.object({
   email: Joi.string().email().required(), // requiere email
   password: Joi.string().required(), // requiere password
+});
+
+// --- NUEVOS SCHEMAS PARA RECUPERACIÓN DE CONTRASEÑA ---
+const requestResetSchema = Joi.object({
+    email: Joi.string().email().required(),
+});
+
+const resetPasswordSchema = Joi.object({
+    token: Joi.string().required(),
+    newPassword: Joi.string().min(6).required(),
 });
 
 // -----
@@ -99,4 +111,93 @@ exports.login = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message }); // Si se genera algun error del server
   }
+};
+// -----
+
+// controlador (funcion) para solicitar el reseteo de contraseña (VERSIÓN CORREGIDA)
+exports.requestPasswordReset = async (req, res) => {
+    // 1. (CORREGIDO) Validar el cuerpo de la petición
+    const { error } = requestResetSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    // 2. (CORREGIDO) Obtener el email del body
+    const { email } = req.body;
+
+    try {
+        // 3. (CORREGIDO) Verificar si el usuario existe en la base de datos
+        const [[user]] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
+
+        // 4. Si el usuario NO existe, enviamos una respuesta genérica por seguridad
+        // para no revelar qué correos están registrados.
+        if (!user) {
+            return res.status(200).json({ message: 'Si existe una cuenta con este correo, se ha enviado un código de recuperación.' });
+        }
+
+        // Si el usuario SÍ existe, procedemos a crear el token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 3600000); // 1 hora desde ahora
+
+        // Limpiamos tokens viejos para este email y guardamos el nuevo
+        await db.query('DELETE FROM password_reset_tokens WHERE email = ?', [email]);
+        await db.query(
+            'INSERT INTO password_reset_tokens (email, token, expires_at) VALUES (?, ?, ?)',
+            [email, resetToken, expiresAt]
+        );
+
+        // 5. Enviar el correo electrónico real
+        try {
+            await emailService.sendPasswordResetEmail(email, resetToken);
+        } catch (emailError) {
+            // Si el correo falla, es un error del servidor, pero no lo revelamos al usuario.
+            // Lo registramos para que tú puedas depurarlo.
+            console.error(`FALLO CRÍTICO: No se pudo enviar el correo a ${email}. Error: ${emailError.message}`);
+        }
+
+        // 6. La respuesta al usuario siempre es la misma
+        res.status(200).json({ message: 'Si existe una cuenta con este correo, se ha enviado un código de recuperación.' });
+
+    } catch (err) {
+        // Este catch atrapará errores de la base de datos
+        console.error("Error en requestPasswordReset:", err.message);
+        res.status(500).json({ error: "Ocurrió un error en el servidor." });
+    }
+};
+
+// -----
+// NUEVO: controlador (funcion) para validar el token y cambiar la contraseña
+exports.resetPassword = async (req, res) => {
+    const { error } = resetPasswordSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    const { token, newPassword } = req.body;
+
+    try {
+        // 1. Buscar el token en la base de datos
+        const [[tokenData]] = await db.query('SELECT * FROM password_reset_tokens WHERE token = ?', [token]);
+
+        if (!tokenData) {
+            return res.status(400).json({ error: 'El código de recuperación es inválido.' });
+        }
+
+        // 2. Verificar si el token ha expirado
+        if (new Date(tokenData.expires_at) < new Date()) {
+            // Eliminar el token expirado
+            await db.query('DELETE FROM password_reset_tokens WHERE token = ?', [token]);
+            return res.status(400).json({ error: 'El código de recuperación ha expirado. Por favor, solicita uno nuevo.' });
+        }
+
+        // 3. Encriptar la nueva contraseña
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // 4. Actualizar la contraseña en la tabla de usuarios
+        await db.query('UPDATE users SET password = ? WHERE email = ?', [hashedPassword, tokenData.email]);
+
+        // 5. Eliminar el token de la base de datos para que no se pueda reutilizar
+        await db.query('DELETE FROM password_reset_tokens WHERE token = ?', [token]);
+
+        res.status(200).json({ message: 'Contraseña actualizada correctamente.' });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 };

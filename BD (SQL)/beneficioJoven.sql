@@ -90,3 +90,14 @@ CREATE TABLE coupon_redemptions (
     INDEX idx_redemption_date (redeemed_at),
     INDEX idx_user_redemptions (user_id, redeemed_at)
 );
+
+-- Esta tabla almacenará los tokens para el reseteo de contraseña.
+-- Son temporales y de un solo uso.
+CREATE TABLE password_reset_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE, -- El token único que se enviará por correo
+    expires_at TIMESTAMP NOT NULL,      -- Fecha y hora de expiración del token
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_token (token) -- Para búsquedas rápidas del token
+);
