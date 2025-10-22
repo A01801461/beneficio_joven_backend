@@ -18,7 +18,7 @@ const couponRoutes = require('./routes/couponRoutes'); // importar rutas de cupo
 const path = require('path');  // Para manejar rutas de archivos
 const cors = require('cors');  // Para habilitar CORS
 const admin = require('firebase-admin');
-const serviceAccount = require('./path/to/your-service-account-key.json');
+const serviceAccount = require('./example-firebase-key.json');
 
 dotenv.config();
 
@@ -38,9 +38,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+// Inicializar Firebase Admin SDK
+// comentado porque da error sin lisencia real
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount)
+// });
 
 // Rutas del API
 app.use('/beneficioJoven/auth', authRoutes);

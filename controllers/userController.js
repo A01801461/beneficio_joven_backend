@@ -8,6 +8,8 @@
 //----------------------------------------------------------
 
 const db = require('../config/db'); // importando archivo de configuracion de conexion a BD
+const fs = require('fs');
+const path = require('path');
 
 // Controlador (funcion) para crear usuario (para admins, similar a register)
 exports.createUser = async (req, res) => {
@@ -201,5 +203,104 @@ exports.toggleMerchantSubscription = async (req, res) => {
     }
     console.error('Error en toggleMerchantSubscription:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+// ---
+
+// Endpoint para eliminar un usuario y toda su info relacionada
+exports.deleteUser = async (req, res) => {
+  const { userId } = req.params;
+  let connection;
+
+  try {
+    // 1. Obtener una conexión del pool e iniciar una transacción
+    connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    // 2. Verificar si el usuario existe y obtener su rol y email
+    const [users] = await connection.query('SELECT id, role, email FROM users WHERE id = ?', [userId]);
+    if (users.length === 0) {
+      await connection.rollback();
+      connection.release();
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    const user = users[0];
+
+    // 3. Lógica de eliminación basada en el rol del usuario
+    switch (user.role) {
+      case 'merchant':
+        // Si es un comercio, eliminar todos sus cupones y datos relacionados primero
+        const [coupons] = await connection.query('SELECT id, qr_code_url FROM coupons WHERE merchant_id = ?', [userId]);
+
+        for (const coupon of coupons) {
+          // Eliminar registros en tablas de muchos a muchos
+          await connection.query('DELETE FROM user_coupons WHERE coupon_id = ?', [coupon.id]);
+          await connection.query('DELETE FROM coupon_redemptions WHERE coupon_id = ?', [coupon.id]);
+
+          // Eliminar archivo QR físico si existe
+          if (coupon.qr_code_url) {
+            const qrFilename = path.basename(coupon.qr_code_url);
+            const qrPath = path.join(__dirname, '..', 'qrcodes', qrFilename);
+            if (fs.existsSync(qrPath)) {
+              try {
+                fs.unlinkSync(qrPath);
+              } catch (unlinkErr) {
+                console.error(`⚠️ Error al eliminar archivo QR ${qrPath}:`, unlinkErr);
+                // No detenemos el proceso, pero es bueno registrarlo
+              }
+            }
+          }
+        }
+        
+        // Eliminar todos los cupones del comercio
+        await connection.query('DELETE FROM coupons WHERE merchant_id = ?', [userId]);
+        
+        // Eliminar suscripciones al comercio
+        await connection.query('DELETE FROM merchant_subscriptions WHERE merchant_id = ?', [userId]);
+        
+        // Eliminar perfil del comercio
+        await connection.query('DELETE FROM merchant_profiles WHERE user_id = ?', [userId]);
+        break;
+
+      case 'user':
+        // Si es un usuario final, eliminar sus cupones guardados, redenciones y suscripciones
+        await connection.query('DELETE FROM user_coupons WHERE user_id = ?', [userId]);
+        await connection.query('DELETE FROM coupon_redemptions WHERE user_id = ?', [userId]);
+        await connection.query('DELETE FROM merchant_subscriptions WHERE user_id = ?', [userId]);
+        
+        // Eliminar perfil de usuario
+        await connection.query('DELETE FROM user_profiles WHERE user_id = ?', [userId]);
+        break;
+
+      case 'admin':
+      case 'super_admin':
+        // Si es admin, eliminar su perfil
+        await connection.query('DELETE FROM admin_profiles WHERE user_id = ?', [userId]);
+        break;
+    }
+
+    // 4. Eliminar tokens de reseteo de contraseña (común para todos los roles)
+    await connection.query('DELETE FROM password_reset_tokens WHERE email = ?', [user.email]);
+
+    // 5. Finalmente, eliminar al usuario de la tabla principal 'users'
+    await connection.query('DELETE FROM users WHERE id = ?', [userId]);
+
+    // 6. Si todo fue exitoso, confirmar los cambios
+    await connection.commit();
+
+    res.status(200).json({ message: 'Usuario y toda su información relacionada han sido eliminados exitosamente.' });
+
+  } catch (err) {
+    // Si ocurre cualquier error, revertir todos los cambios
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error('💥 Error en deleteUser:', err);
+    res.status(500).json({ error: 'Error interno del servidor al intentar borrar el usuario.', details: err.message });
+  } finally {
+    // 7. Liberar la conexión en cualquier caso (éxito o error)
+    if (connection) {
+      connection.release();
+    }
   }
 };
