@@ -26,5 +26,8 @@ router.get('/admins', verifyToken, checkRole(['admin', 'super_admin']), userCont
 router.get('/jovenes', verifyToken, checkRole(['admin', 'super_admin']), userController.listJovenes); // listar jovenes
 router.get('/merchants/:merchantType', verifyToken, userController.listByMerchantType); // listar comercios de x tipo
 router.get('/joven/:id', verifyToken, checkRole(['user']), userController.datosJoven); // info de x joven
+router.get('/joven/:id', verifyToken, checkRole(['user']), userController.datosJoven); // info de x joven
+router.put('/profile/fcm-token', verifyToken, checkRole(['user']), userController.updateFcmToken); // actualizar FCM token
+router.post('/merchants/:merchantId/toggle-subscription', verifyToken, checkRole(['user']), userController.toggleMerchantSubscription); // suscribir/desuscribir joven a comercio
 
 module.exports = router;

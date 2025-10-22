@@ -11,6 +11,7 @@ const db = require('../config/db'); // importando archivo de configuracion de co
 const QRCode = require('qrcode'); // importando qrcode (node module para creacion de QRs)
 const fs = require('fs'); // importando sf (File System) (node module para manipulacion de archivos)
 const path = require('path'); // importando qrcode (node module para trabajar con rutas)
+const admin = require('firebase-admin'); // ¡Importante! El SDK de Firebase Admin
 
 // -----
 // Función para generar QRs
@@ -42,55 +43,82 @@ const generateQR = async (code) => {
     throw new Error(`Error al generar QR: ${error.message}`);
   }
 };
-
 // -----
-// Controlador (funcion) para crear cupón
+
+// // Controlador (funcion) para crear un nuevo cupón
 exports.createCoupon = async (req, res) => {
+  // Mantenemos merchant_id del body como solicitaste para tu prototipo.
   const { code, title, description, discount_type, valid_until, merchant_id, usage_limit } = req.body;
-  console.log('📥 Request body recibido:', { code, merchant_id }); // mensaje de control de inicio de proceso
+  
+  console.log('📥 Request body recibido:', { code, merchant_id });
 
   try {
-    // Verificar que merchant_id existe en users y tiene rol 'merchant'
     const [userRows] = await db.query(
-      'SELECT id, role FROM users WHERE id = ?',
-      [merchant_id]
+      'SELECT role, (SELECT merchant_name FROM merchant_profiles WHERE user_id = ?) as merchant_name FROM users WHERE id = ?',
+      [merchant_id, merchant_id]
     );
     
-    if (userRows.length === 0) {
-      return res.status(400).json({ error: 'merchant_id no encontrado en la base de datos' });
+    if (userRows.length === 0 || userRows[0].role !== 'merchant') {
+      return res.status(403).json({ error: 'El usuario no es un comercio válido.' });
     }
-    
-    if (userRows[0].role !== 'merchant') {
-      return res.status(400).json({ error: 'El comercio con el merchant_id proporcionado no existe' });
-    }
+    const merchantName = userRows[0].merchant_name;
 
-    // Verificar que el código del cupón sea único
-    const [existingCoupon] = await db.query(
-      'SELECT id FROM coupons WHERE code = ?',
-      [code]
-    );
-    
+    const [existingCoupon] = await db.query('SELECT id FROM coupons WHERE code = ?', [code]);
     if (existingCoupon.length > 0) {
       return res.status(400).json({ error: 'El código del cupón ya existe' });
     }
 
-    // llamando generador de QRs con info 'code'
     const generatedQrPath = await generateQR(code);
+    const fullQrUrl = `http://localhost:3000${generatedQrPath || ''}`;
 
-    // Concatenar la URL base con path del QR
-    const fullQrUrl = `http://localhost:3000${generatedQrPath || ''}`; // localhost para pruebas locales
-
-    // insertando todos los datos a la BD
     const [result] = await db.query(
       'INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid_until, usage_limit, qr_code_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [code, title, description, discount_type, merchant_id, valid_until, usage_limit, fullQrUrl]
     );
     
-    // Mensajes de control
-    res.status(201).json({ message: 'Cupón creado', couponId: result.insertId, qrUrl: fullQrUrl });
+    const newCouponId = result.insertId;
+
+    // --- 🚀 LÓGICA DE NOTIFICACIONES ---
+    try {
+      const [subscribers] = await db.query(`
+        SELECT up.fcm_token
+        FROM merchant_subscriptions ms
+        JOIN user_profiles up ON ms.user_id = up.user_id
+        WHERE ms.merchant_id = ? AND up.fcm_token IS NOT NULL
+      `, [merchant_id]); // CORRECCIÓN 3: Se usa 'merchant_id' aquí también.
+
+      const tokens = subscribers.map(s => s.fcm_token);
+
+      if (tokens.length > 0) {
+        console.log(`📬 Encontrados ${tokens.length} suscriptores para el comercio ${merchant_id}. Enviando notificaciones...`);
+        
+        const message = {
+          notification: {
+            title: `¡Nuevo cupón de ${merchantName}!`,
+            body: title,
+          },
+          data: {
+            couponId: String(newCouponId), 
+            merchantId: String(merchant_id)
+          },
+          tokens: tokens,
+        };
+
+        const response = await admin.messaging().sendMulticast(message);
+        console.log('✅ Notificaciones enviadas:', `${response.successCount} con éxito, ${response.failureCount} fallidas.`);
+      } else {
+        console.log(`📪 No se encontraron suscriptores con tokens para el comercio ${merchant_id}.`);
+      }
+    } catch (notificationError) {
+      console.error('💥 Error al enviar notificaciones:', notificationError);
+    }
+    
+    // La respuesta al cliente no cambia.
+    res.status(201).json({ message: 'Cupón creado con éxito', couponId: newCouponId, qrUrl: fullQrUrl });
+
   } catch (err) {
     console.error('💥 Error en createCoupon:', err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error interno del servidor.' });
   }
 };
 

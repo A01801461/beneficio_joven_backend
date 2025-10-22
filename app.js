@@ -17,6 +17,8 @@ const userRoutes = require('./routes/userRoutes'); // importar rutas de usuarios
 const couponRoutes = require('./routes/couponRoutes'); // importar rutas de cupones
 const path = require('path');  // Para manejar rutas de archivos
 const cors = require('cors');  // Para habilitar CORS
+const admin = require('firebase-admin');
+const serviceAccount = require('./path/to/your-service-account-key.json');
 
 dotenv.config();
 
@@ -34,6 +36,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Ruta raíz para servir index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
 });
 
 // Rutas del API

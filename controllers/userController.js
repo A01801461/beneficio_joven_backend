@@ -121,3 +121,85 @@ exports.datosJoven = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor o el usuario no es un joven' });
   }
 };
+// ---
+
+// funcion para actualizar el token FCM de un usuario joven
+exports.updateFcmToken = async (req, res) => {
+  const userId = req.user.id; 
+  const { fcm_token } = req.body; // El token que envía la app Kotlin
+
+  if (!fcm_token) {
+    return res.status(400).json({ error: 'fcm_token es requerido' });
+  }
+
+  try {
+    // Actualizamos el token en la tabla user_profiles
+    const [result] = await db.query(
+      'UPDATE user_profiles SET fcm_token = ? WHERE user_id = ?',
+      [fcm_token, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      // Esto podría pasar si un usuario 'merchant' o 'admin' intenta usar este endpoint
+      return res.status(404).json({ error: 'Perfil de usuario no encontrado' });
+    }
+
+    res.status(200).json({ message: 'Token de FCM actualizado con éxito' });
+  
+  } catch (err) {
+    console.error('Error al actualizar fcm_token:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+// ---
+
+// funcion para suscribir/desuscribir joven a un comercio
+exports.toggleMerchantSubscription = async (req, res) => {
+  const userId = req.user.id;
+  const { merchantId } = req.params;
+
+  try {
+    // 1. Primero, verificamos si la suscripción ya existe
+    const [existing] = await db.query(
+      'SELECT id FROM merchant_subscriptions WHERE user_id = ? AND merchant_id = ?',
+      [userId, merchantId]
+    );
+
+    // 2. Si existe, la eliminamos (Unsubscribe)
+    if (existing.length > 0) {
+      await db.query(
+        'DELETE FROM merchant_subscriptions WHERE id = ?', 
+        [existing[0].id]
+      );
+      
+      // Devolvemos el nuevo estado
+      return res.status(200).json({ 
+        message: 'Suscripción eliminada', 
+        subscribed: false 
+      });
+    } 
+    
+    // 3. Si no existe, la creamos (Subscribe)
+    else {
+      await db.query(
+        'INSERT INTO merchant_subscriptions (user_id, merchant_id) VALUES (?, ?)',
+        [userId, merchantId]
+      );
+      
+      // Devolvemos el nuevo estado
+      return res.status(201).json({ 
+        message: 'Suscripción añadida', 
+        subscribed: true 
+      });
+    }
+
+  } catch (err) {
+    // Manejar el error de 'llave única' si algo sale mal en una condición de carrera
+    if (err.code === 'ER_DUP_ENTRY') {
+      // Esto es poco probable con nuestra lógica, pero es bueno tenerlo
+      return res.status(409).json({ error: 'Conflicto de suscripción, intenta de nuevo.' });
+    }
+    console.error('Error en toggleMerchantSubscription:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};

@@ -29,6 +29,7 @@ CREATE TABLE user_profiles (
     curp VARCHAR(18) UNIQUE NOT NULL,
     birth_date DATE,
     municipality VARCHAR(100),
+    fcm_token VARCHAR(255) NULL DEFAULT NULL, -- token para notificaciones push
     FOREIGN KEY (user_id) REFERENCES users(id) -- llave foranea desde 'users'
 );
 
@@ -100,4 +101,13 @@ CREATE TABLE password_reset_tokens (
     expires_at TIMESTAMP NOT NULL,      -- Fecha y hora de expiración del token
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_token (token) -- Para búsquedas rápidas del token
+);
+
+CREATE TABLE merchant_subscriptions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    merchant_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (merchant_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_subscription (user_id, merchant_id)
 );

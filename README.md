@@ -79,7 +79,7 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
 
 2. **Configuración**:
    - Clona este repositorio.
-   - Instala dependencias: `npm install express mysql2 bcryptjs jsonwebtoken dotenv body-parser cors joi qrcode nodemailer nodemailer-sendgrid-transport`.
+   - Instala dependencias: `npm install express mysql2 bcryptjs jsonwebtoken dotenv body-parser cors joi qrcode nodemailer @sendgrid/mail firebase-admin`.
    - Configura el archivo `.env` con las credenciales de MySQL (por default: `DB_USER=root`, `DB_PASSWORD=` en XAMPP).
    - Corre el servidor: `node app.js`.
 
