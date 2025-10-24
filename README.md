@@ -136,8 +136,6 @@ El backend está construido con **Node.js** y **Express.js**, utilizando una bas
 ## 🔒 Seguridad y Autenticación
 
 El sistema cuenta con una infraestructura de autenticación y control de acceso completa, diseñada para garantizar la seguridad de los datos y la integridad de las operaciones.  
-Sin embargo, **por motivos de pruebas y desarrollo**, las medidas de seguridad no se encuentran activas en todos los endpoints de la versión actualmente desplegada ni del repositorio público.  
-Esto permite que las aplicaciones cliente (móvil y panel) puedan realizar pruebas funcionales sin requerir tokens válidos o usuarios reales.  
 
 ### ⚙️ Implementaciones de seguridad incluidas en el código
 
