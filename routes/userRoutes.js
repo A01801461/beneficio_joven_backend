@@ -30,5 +30,6 @@ router.get('/joven/:id', verifyToken, checkRole(['user']), userController.datosJ
 router.put('/profile/fcm-token', verifyToken, checkRole(['user']), userController.updateFcmToken); // actualizar FCM token
 router.post('/merchants/:merchantId/toggle-subscription', verifyToken, checkRole(['user']), userController.toggleMerchantSubscription); // suscribir/desuscribir joven a comercio
 router.delete('/users/:userId', verifyToken, checkRole(['admin', 'super_admin']), userController.deleteUser); // eliminar usuario y toda su info relacionada
+router.get('/subscribed-merchants', verifyToken, checkRole(['user']), userController.getSubscribedMerchants); // obtener IDs de comercios suscritos
 
 module.exports = router;

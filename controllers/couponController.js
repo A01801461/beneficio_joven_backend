@@ -45,11 +45,9 @@ const generateQR = async (code) => {
 };
 // -----
 
-// // Controlador (funcion) para crear un nuevo cupón
+// Crear cupón (para admins)
 exports.createCoupon = async (req, res) => {
-  // Mantenemos merchant_id del body como solicitaste para tu prototipo.
   const { code, title, description, discount_type, valid_until, merchant_id, usage_limit } = req.body;
-  
   console.log('📥 Request body recibido:', { code, merchant_id });
 
   try {
@@ -57,10 +55,11 @@ exports.createCoupon = async (req, res) => {
       'SELECT role, (SELECT merchant_name FROM merchant_profiles WHERE user_id = ?) as merchant_name FROM users WHERE id = ?',
       [merchant_id, merchant_id]
     );
-    
+
     if (userRows.length === 0 || userRows[0].role !== 'merchant') {
       return res.status(403).json({ error: 'El usuario no es un comercio válido.' });
     }
+
     const merchantName = userRows[0].merchant_name;
 
     const [existingCoupon] = await db.query('SELECT id FROM coupons WHERE code = ?', [code]);
@@ -69,52 +68,69 @@ exports.createCoupon = async (req, res) => {
     }
 
     const generatedQrPath = await generateQR(code);
-    const fullQrUrl = `http://localhost:3000${generatedQrPath || ''}`;
+    const fullQrUrl = `https://bj-api.site${generatedQrPath || ''}`;
 
     const [result] = await db.query(
       'INSERT INTO coupons (code, title, description, discount_type, merchant_id, valid_until, usage_limit, qr_code_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [code, title, description, discount_type, merchant_id, valid_until, usage_limit, fullQrUrl]
     );
-    
+
     const newCouponId = result.insertId;
 
-    // --- 🚀 LÓGICA DE NOTIFICACIONES ---
+    // --- 🚀 LÓGICA DE NOTIFICACIONES (ENFOQUE SIMPLE) ---
     try {
       const [subscribers] = await db.query(`
         SELECT up.fcm_token
         FROM merchant_subscriptions ms
         JOIN user_profiles up ON ms.user_id = up.user_id
         WHERE ms.merchant_id = ? AND up.fcm_token IS NOT NULL
-      `, [merchant_id]); // CORRECCIÓN 3: Se usa 'merchant_id' aquí también.
+      `, [merchant_id]);
 
       const tokens = subscribers.map(s => s.fcm_token);
 
       if (tokens.length > 0) {
         console.log(`📬 Encontrados ${tokens.length} suscriptores para el comercio ${merchant_id}. Enviando notificaciones...`);
         
-        const message = {
-          notification: {
-            title: `¡Nuevo cupón de ${merchantName}!`,
-            body: title,
-          },
-          data: {
-            couponId: String(newCouponId), 
-            merchantId: String(merchant_id)
-          },
-          tokens: tokens,
-        };
+        // Crear las promesas para enviar a cada token individualmente
+        const notificationPromises = tokens.map(async (token) => {
+          try {
+            await admin.messaging().send({
+              token: token,
+              notification: {
+                title: `¡Nuevo cupón de ${merchantName}!`,
+                body: title,
+              },
+              data: {
+                couponId: String(newCouponId),
+                merchantId: String(merchant_id)
+              }
+            });
+            return { success: true, token };
+          } catch (error) {
+            console.error(`❌ Error enviando a token ${token.substring(0, 20)}...:`, error.message);
+            return { success: false, token, error: error.message };
+          }
+        });
 
-        const response = await admin.messaging().sendMulticast(message);
-        console.log('✅ Notificaciones enviadas:', `${response.successCount} con éxito, ${response.failureCount} fallidas.`);
+        // Ejecutar todas las notificaciones en paralelo
+        const results = await Promise.all(notificationPromises);
+        const successCount = results.filter(r => r.success).length;
+        const failureCount = results.filter(r => !r.success).length;
+
+        console.log(`✅ Notificaciones enviadas: ${successCount} con éxito, ${failureCount} fallidas.`);
       } else {
         console.log(`📪 No se encontraron suscriptores con tokens para el comercio ${merchant_id}.`);
       }
     } catch (notificationError) {
       console.error('💥 Error al enviar notificaciones:', notificationError);
+      // No fallar la creación del cupón si las notificaciones fallan
     }
-    
-    // La respuesta al cliente no cambia.
-    res.status(201).json({ message: 'Cupón creado con éxito', couponId: newCouponId, qrUrl: fullQrUrl });
+
+    res.status(201).json({
+      message: 'Cupón creado con éxito',
+      couponId: newCouponId,
+      qrUrl: fullQrUrl
+    });
 
   } catch (err) {
     console.error('💥 Error en createCoupon:', err);

@@ -304,3 +304,17 @@ exports.deleteUser = async (req, res) => {
     }
   }
 };
+// ---
+
+// Controlador (funcion) para obtener los IDs de comercios suscritos por el usuario
+exports.getSubscribedMerchants = async (req, res) => {
+  const userId = req.user.id; // Asumiendo que el middleware de autenticacion establece req.user
+  try {
+    const [subscriptions] = await db.query('SELECT merchant_id FROM merchant_subscriptions WHERE user_id = ?', [userId]);
+    const merchantIds = subscriptions.map(sub => sub.merchant_id);
+    res.json(merchantIds);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+// -----
