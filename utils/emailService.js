@@ -1,3 +1,16 @@
+//----------------------------------------------------------
+// /utils/emailService.js
+//
+// Servicio de email para recuperacion de password.
+//
+// Usando @sendgrid/mail para enviar correos.
+// Sendgrid es una plataforma de envío de correos transaccionales y de marketing.
+// esta configurado mi correo personal para pruebas.
+//
+// Fecha: 26-Oct-2025
+// Autores: Equipo 2 - Gpo 401
+//----------------------------------------------------------
+
 const sgMail = require('@sendgrid/mail');
 
 // Le decimos a la librería de SendGrid cuál es nuestra clave API.
